@@ -1,18 +1,5 @@
 # Autonomous-Dog-Feeder
 
-## Preface
-
-The goal of the assignment is to create a cloud-based IoT system that:
-
-- collects information from a set of environmental sensors:
-  - load cell sensor to measure the weight of the food in the bowl.
-  - load cell sensor to measure the weight of the water in the bowl.
-- and interacts with the environment using actuators following the 'Sense-Think-Act' paradigm:
-  - two servo motors to pour food in the bowl (one for shaking, one to open/close).
-  - servo motor to pour water in the bowl.
-
-The IoT device will be developed using RIOT-OS while the cloud-based services will be based on the AWS cloud-based service ecosystem.
-
 ## What is the problem and why do you need IoT?
 
 Problems we want to solve:
@@ -44,7 +31,7 @@ Actuators:
 - A servo motor to open and close the recipient of the food.
 The activation of the servo motor will be triggered by the cloud-based service only the bowl can contain the required amount of food.
 - A servo motor to shake the recipient of the food. The activation of the servo motor will be triggered by the cloud-based service only the bowl can contain the required amount of food.
-- A servo motor to open and close the recipient of the water.
-The activation of the servo motor will be triggered if the water load cell sensor detects that the water level is below a certain threshold.
+- A water pump to fill the bowl with the water.
+The activation of the water pump will be triggered by the load cell sensor only when the bowl doesn't contain the required amount of water.
 
 ## What data are collected and by which sensors?
