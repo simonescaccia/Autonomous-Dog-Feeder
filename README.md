@@ -25,6 +25,7 @@ Periodic sensing is required to measure over time the quantity of food in the bo
 - **Load cell** sensor to measure the weight of the water in the bowl to quantify the liters of water in the bowl (the density of the water is about 1 Kg/L, considering the temperature of the water at room temperature and the pressure at sea level).
 Periodic sensing is required to measure over time the quantity of water in the bowl.
 (**Identify a suitable sensor data prediction model.**)
+- **Button** to start or stop the autonomous dog feeder.
 
 Actuators:
 
@@ -42,13 +43,21 @@ The activation of the water pump will be triggered by the load cell sensor only 
   Also, we can support the fact that the resolution of the 5 Kg load cell is good enough for our purpose. The ESP32 is connected to the load cell via the HX711 amplifier, which has a resolution of 24 bits. This means that the load cell can measure the weight of the food in the bowl with a resolution of 5/2^24 = 0.0000003 Kg = 0.0003 g.
   The chosen unit of measurement is grams (g) and is set using a calibration factor.
   To choose the periodicity of the sensing we need to consider the fact that we are interested in monitoring the dog's eating habits, like at which time the dog starts eating considering that the food is scheduled to be served at a specific time, and the speed of eating the food in the bowl. So, to reconstruct the dog's eating velocity, we can consider that the dog finishes its meal in a maximum of 5 minutes.
-  Considering the sampling theorem, we need to sample every at least 2.5 minutes, but some dogs eat faster than others, in particular puppies can finish their meal in 1 minute. So, we can choose a sampling period of 30 seconds.
+  Considering the sampling theorem, we need to sample every at least 2.5 minutes, but some dogs eat faster than others, in particular puppies can finish their meal in about 1 minute. So, we can choose a sampling period of 30 seconds.
   Finally, when the dog ends its meal we can stop the sensing until a new scheduled meal is served.
   - The **load cell** sensor to measure the weight of the water in the bowl has a capacity of 5 Kg since the weight of the bowl can saturate the 1 Kg load cell.
   The chosen unit of measurement is liters (L) and is set using a calibration factor since we can assume 1 Kg = 1 L.
   To choose the periodicity of the sensing we need to consider the fact that we are interested in having water in the bowl at all times and monitoring the dog's water consumption habits, like how much water the dog drinks during the day.
   So, to have water in the bowl at all times, we can consider that the dog drinks continuously for a maximum of 1 minute and after that, the bowl can be empty, so we need to refill it.
-  Using the sampling theorem, we need to sample every at least 30 seconds, so we can choose a sampling period of 25 seconds.
+  Using the sampling theorem, we need to sample every at least 30 seconds, so we can choose a sampling period of 30 seconds since also the food sensing is triggered every 30 seconds.
   
-- Data velocity, variability and variety:
-  - Food data: the velocity of the data is one sample every 30 seconds, but only after the food is served and until there is food in the bowl, otherwise the data is not sampled (variability). The variety of data goes from the weight of the 
+- Collected data velocity, variability and variety:
+  - Food data: the velocity of the data is one sample every 30 seconds, but only after the food is served and until there is food in the bowl, otherwise the data is not sampled (variability). The variety of data goes from the weight of a single meal, specified by the dog owner, to 0 g. Peaks in the weight of the food can be caused by the dog pressing the bowl while eating.
+  - Water data: the velocity of the data is one sample every 30 seconds, at any time (variability). The variety of data goes from the capacity of the bowl, defined by the vendor of the autonomous dog feeder, to 0 L. Peaks in the weight of the water can be caused by the dog pressing the bowl while drinking.
+
+- Data analysis:
+  - Local analysis: every sample is analyzed locally to check if something strange is happening, like:
+    - If the weight of the food or the liters of water is negative, then we can assume there is an accuracy error in the sensor, so we can set the value to 0.
+    - If the weight of the food is greater than the poured one, then we can assume that the dog is pressing the bowl while eating, so we can discard the sample.
+    - If the water is greater than the poured one, then we can assume that the dog is pressing the bowl while drinking, so we can discard the sample.
+    - 
