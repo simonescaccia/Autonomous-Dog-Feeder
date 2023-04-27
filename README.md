@@ -56,8 +56,14 @@ The activation of the water pump will be triggered by the load cell sensor only 
   - Water data: the velocity of the data is one sample every 30 seconds, at any time (variability). The variety of data goes from the capacity of the bowl, defined by the vendor of the autonomous dog feeder, to 0 L. Peaks in the weight of the water can be caused by the dog pressing the bowl while drinking.
 
 - Data analysis:
-  - Local analysis: every sample is analyzed locally to check if something strange is happening, like:
+  - Local data analysis: every sample is analyzed locally to check if something strange is happening, like:
     - If the weight of the food or the liters of water is negative, then we can assume there is an accuracy error in the sensor, so we can set the value to 0.
     - If the weight of the food is greater than the poured one, then we can assume that the dog is pressing the bowl while eating, so we can discard the sample.
     - If the water is greater than the poured one, then we can assume that the dog is pressing the bowl while drinking, so we can discard the sample.
-    - 
+    - If the servo motor is activated but the weight of the food is not increasing after a time defined by the distance between the recipient of the food and the bowl, then we can assume that the recipient of the food is empty, so we need to notify the dog owner.
+    - If the water pump is activated but the weight of the water is not increasing after a time defined by the distance between the recipient of the water and the bowl, then we can assume that the recipient of the water is empty, so we need to notify the dog owner.
+    - If we want to pour x grams of food, then we need to continuously monitor the weight of the food in the bowl and stop the servo motor when the weight of the food reaches x grams.
+    - If we want to pour y liters of water, then we need to continuously monitor the weight of the water in the bowl and stop the water pump when the weight of the water reaches y liters.
+  - Collective data analysis:
+    - We expect to obtain similar habits for dogs with the same characteristics, like breed, age, weight, etc. So, we can use the data collected from all the dogs to predict the eating habits of a new dog with similar characteristics.
+
