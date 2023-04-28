@@ -74,7 +74,13 @@ Using the sampling theorem, we need to sample every at least 30 seconds, so we c
 
 ### Data aggregation on the edge
 
+Federeting learning: we can use the data collected from the single dog to build a partial model, and share the parameters of the model with the cloud-based service to build a global model, using all the partial models from all the dogs.
+The global model should consider the characteristics of the dog, like breed, age, weight, etc. to predict the eating habits of a new dog with similar characteristics.
+With this approach, we can avoid sending the data to the cloud-based service, but only the parameters of the partial model, to preserve the privacy of the dog and minimize the energy consumption of the device; since sending only the parameters of the partial model is less energy consuming than sending the data.
+
 ### Data aggregation on the cloud
+
+Another approach is to send the data to the cloud-based service and build the global model there. In this case, we need to consider the privacy of the dog and the greater energy consumption of the device.
 
 ## What are the connected components, the protocols to connect them and the overall IoT architecture?
 
