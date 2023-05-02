@@ -85,3 +85,7 @@ Another approach is to send the data to the cloud-based service and build the gl
 
 ## What are the connected components, the protocols to connect them and the overall IoT architecture?
 
+## Other resources
+
+- [hackster.io]()
+- [YouTube]()
