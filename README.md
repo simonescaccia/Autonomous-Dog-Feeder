@@ -37,14 +37,15 @@ The activation of the water pump will be triggered by the load cell sensor only 
 
 ## What data are collected and by which sensors?
 
-### Sensors accuracy, the unit of measurement and periodicity:
+### Sensors accuracy, the unit of measurement and periodicity
 
 - The **load cell** sensor to measure the weight of the food in the bowl has a capacity of 5 Kg since the 1 Kg load cell is not suitable for large breeds of dogs.
 Large breeds of dogs eat about 600/700 g of food per day divided into two or three meals(the amount of food is written on the dog food package). But in special cases, like pregnancy or lactation, the food quantity can be three times the normal amount. So, if a pregnant dog eats 2.1 Kg of food per day divided into two meals, a 1 Kg load cell can not be suitable for this case. More, the tare i.e. the weight of the bowl should be considered too.  
 Also, we can support the fact that the resolution of the 5 Kg load cell is good enough for our purpose. The ESP32 is connected to the load cell via the HX711 amplifier, which has a resolution of 24 bits. This means that the load cell can measure the weight of the food in the bowl with a resolution of 5/2^24 = 0.0000003 Kg = 0.0003 g.
 The chosen unit of measurement is grams (g) and is set using a calibration factor.
-To choose the periodicity of the sensing we need to consider the fact that we are interested in monitoring the dog's eating habits, like at which time the dog starts eating considering that the food is scheduled to be served at a specific time, and the speed of eating the food in the bowl. So, to reconstruct the dog's eating velocity, we can consider that the dog finishes its meal in a maximum of 5 minutes.
+To choose the periodicity of the sensing we need to consider the fact that we are interested in monitoring the dog's eating habits, like at which time the dog starts eating considering that the food is scheduled to be served at a specific time, and the speed of eating the food in the bowl. So, to reconstruct the dog's eating velocity, we can consider that a large breeds dog finishes its meal in a maximum of 5 minutes.
 Considering the sampling theorem, we need to sample every at least 2.5 minutes, but some dogs eat faster than others, in particular puppies can finish their meal in about 1 minute. So, we can choose a sampling period of 30 seconds.
+This approach is a good start because we don't know a priori the eating habits of a specific dog, so we want to oversample at the beginning and then we can adjust the sampling period according to the dog's eating habits.
 Finally, when the dog ends its meal we can stop the sensing until a new scheduled meal is served.
 - The **load cell** sensor to measure the weight of the water in the bowl has a capacity of 5 Kg since the weight of the bowl can saturate the 1 Kg load cell.
 The chosen unit of measurement is liters (L) and is set using a calibration factor since we can assume 1 Kg = 1 L.
