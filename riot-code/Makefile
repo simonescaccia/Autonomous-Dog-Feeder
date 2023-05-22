@@ -17,4 +17,10 @@ QUIET ?= 1
 
 USEMODULE += xtimer
 
+# modules directory --------------------
+USEMODULE += modules
+INCLUDES += -I$(CURDIR)/include
+DIRS += $(CURDIR)/modules
+# ----------------------------------------
+
 include $(RIOTBASE)/Makefile.include
