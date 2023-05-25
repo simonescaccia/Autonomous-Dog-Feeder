@@ -1,5 +1,8 @@
 #include "driver_hx711.h"
 #include "periph/gpio_util.h"
+#include <stdio.h>
+
+static int i = 0;
 
 static int32_t hx711_read(hx711_t *dev)
 {
@@ -11,7 +14,7 @@ static int32_t hx711_read(hx711_t *dev)
         } u8;
     } value;
 
-    value.i32 = 0;;
+    value.i32 = 0;
 
     gpio_t sck = dev->params.sck;
     gpio_t dout = dev->params.dout;
@@ -28,6 +31,15 @@ static int32_t hx711_read(hx711_t *dev)
 
     value.i32 = (value.u8.fill_byte << 24) | (value.u8.data[2] << 16) | (value.u8.data[1] << 8) | value.u8.data[0];
 
+    if (i == 0) {
+        printf("fill_byte: %"PRIu8"", value.u8.fill_byte);
+        printf("data[2]: %"PRIu8"", value.u8.data[2]);
+        printf("data[1]: %"PRIu8"", value.u8.data[1]);
+        printf("data[0]: %"PRIu8"", value.u8.data[0]);
+        printf("i32: %"PRIu32"", value.i32);
+        i++;
+    }
+
     return value.i32;
 }
 
@@ -43,7 +55,6 @@ void hx711_init (hx711_t *dev, const hx711_params_t *params)
 
     gpio_init(params->sck, GPIO_OUT);
     gpio_init(params->dout, GPIO_IN);
-
 
     hx711_power_up(dev);
 }
