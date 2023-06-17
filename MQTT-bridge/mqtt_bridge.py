@@ -46,7 +46,7 @@ def on_message(_client, _userdata, message):
         if(DEBUG):
             print("AWS payload: ",aws_payload)
 
-        is_published = myMQTTClient.publish(message.topic, aws_payload, 0)
+        is_published = myMQTTClient.publish(message.topic, aws_payload, 2)
 
         if(DEBUG):
             print("Message published: ", is_published)

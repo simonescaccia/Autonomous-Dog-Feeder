@@ -23,4 +23,49 @@ INCLUDES += -I$(CURDIR)/include
 DIRS += $(CURDIR)/modules
 # ----------------------------------------
 
+WIFI_SSID ?= "Pixel-Simone"
+WIFI_PASS ?= "abcdef123"
+
+# Optionally include remoteDNS support. This includes resolution of names at an
+# upstream DNS server and the handling of RDNSS options in Router Advertisements
+# to auto-configure that upstream DNS server.
+# USEMODULE += sock_dns              # include DNS client
+# USEMODULE += gnrc_ipv6_nib_dns     # include RDNSS option handling
+
+ifneq (,$(DEFAULT_MQTT_CLIENT_ID))
+  CFLAGS += -DDEFAULT_MQTT_CLIENT_ID=\"$(DEFAULT_MQTT_CLIENT_ID)\"
+endif
+ifneq (,$(DEFAULT_MQTT_USER))
+  CFLAGS += -DDEFAULT_MQTT_USER=\"$(DEFAULT_MQTT_USER)\"
+endif
+ifneq (,$(DEFAULT_MQTT_PWD))
+  CFLAGS += -DDEFAULT_MQTT_PWD=\"$(DEFAULT_MQTT_PWD)\"
+endif
+
+USEMODULE += netdev_default
+USEPKG += paho-mqtt
+
+# paho-mqtt depends on TCP support, choose which stacks you want
+GNRC_IPV6 ?= 0
+LWIP_IPV4 ?= 1
+LWIP_IPV6 ?= 0
+
+include Makefile.lwip
+include Makefile.gnrc
+
+USEMODULE += sock_async_event
+USEMODULE += sock_ip
+USEMODULE += sock_udp
+USEMODULE += sock_tcp
+
+USEMODULE += ztimer
+USEMODULE += ztimer_msec
+
+####
+
 include $(RIOTBASE)/Makefile.include
+
+ifneq (,$(filter arch_esp,$(FEATURES_USED)))
+  CFLAGS += -DWIFI_SSID=\"$(WIFI_SSID)\"
+  CFLAGS += -DWIFI_PASS=\"$(WIFI_PASS)\"
+endif
