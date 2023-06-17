@@ -29,10 +29,7 @@
 #include "paho_mqtt.h"
 #include "MQTTClient.h"
 
-#include "paho_mqtt.h"
-
-#define MAIN_QUEUE_SIZE     (8)
-static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
+#include "paho_mqtt_methods.h"
 
 #define BUF_SIZE                        1024
 #define MQTT_VERSION_v311               4       /* MQTT v3.1.1 version is 4 */
@@ -76,6 +73,9 @@ static Network network;
 static int topic_cnt = 0;
 static char _topic_to_subscribe[MAX_TOPICS][MAX_LEN_TOPIC];
 
+static unsigned char buf[BUF_SIZE];
+static unsigned char readbuf[BUF_SIZE];
+
 static unsigned get_qos(const char *str)
 {
     int qos = atoi(str);
@@ -96,7 +96,7 @@ static void _on_msg_received(MessageData *data)
            (char *)data->message->payload);
 }
 
-int cmd_discon(int argc, char **argv)
+int _cmd_discon(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
@@ -193,7 +193,7 @@ int cmd_con(int argc, char **argv)
 
 int cmd_pub(int argc, char **argv)
 {
-    enum QoS qos = QOS0;
+    enum QoS qos = QOS2;
 
     if (argc < 3) {
         printf("usage: %s <topic name> <string msg> [QoS level]\n",
@@ -292,4 +292,6 @@ int init_paho_mqtt (void) {
     printf("Running mqtt paho example. Type help for commands info\n");
 
     MQTTStartTask(&client);
+    
+    return 0;
 }
