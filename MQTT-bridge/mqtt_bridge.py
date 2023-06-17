@@ -36,17 +36,17 @@ MQTT_TOPIC_FOOD = "iot/ADF/food"
 
 def on_message(_client, _userdata, message):
 
-    payload = json.loads(message.payload)
-    print("Message received, topic: ", message.topic, " Value: ", payload[VALUE])
+    value = message.payload.decode('utf-8')
+    print("Message received, topic: ", message.topic, " Value: ", value)
 
     # Check the topic of the message
     if (message.topic == MQTT_TOPIC_FOOD or message.topic == MQTT_TOPIC_WATER):
         # Send the message to AWS
-        json_payload = json.dumps({
-            VALUE: payload[VALUE]
-        })
+        aws_payload = '{"'+VALUE+'":"'+value+'"}'
+        if(DEBUG):
+            print("AWS payload: ",aws_payload)
 
-        is_published = myMQTTClient.publish(message.topic, json_payload, 0)
+        is_published = myMQTTClient.publish(message.topic, aws_payload, 0)
 
         if(DEBUG):
             print("Message published: ", is_published)
@@ -80,7 +80,8 @@ if __name__ == '__main__':
     paho_mqtt_client.on_message = on_message
 
     # Start clients
-    myMQTTClient.connect()
+    is_conn = myMQTTClient.connect()
+    print("AWS connection: ",is_conn)
     paho_mqtt_client.connect(host=PAHO_MQTT_BROKER_IP, port=PAHO_MQTT_BROKER_PORT)
     # Blocking call that processes network traffic, dispatches callbacks and
     # handles reconnecting.
