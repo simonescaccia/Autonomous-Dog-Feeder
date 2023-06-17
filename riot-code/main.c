@@ -5,6 +5,8 @@
 #include "driver_hx711.h"
 #include "paho_mqtt.h"
 
+#define MQTT_BRIDGE_IP "192.168.194.113"
+
 const gpio_t gpio_dout = GPIO_PIN(0 ,1);
 const gpio_t gpio_sck = GPIO_PIN(0, 2);
 const uint16_t divider = 362;
@@ -33,7 +35,7 @@ static void _sample (void) {
     printf("value before taring: %"PRIu32"\n", value_before);
     hx711_tare(&dev);
 
-    while(1) {
+    while (1) {
         value_after = hx711_get_units(&dev);
         printf("value after taring: %"PRIu32"\n", value_after);
 
@@ -44,11 +46,24 @@ static void _sample (void) {
 int main(void)
 {
 
-    xtimer_sleep(3);
-
     init_paho_mqtt();
 
+    char* list[1] = {"cmd_con", MQTT_BRIDGE_IP};
+    char** argv = (char**)&list;
+    while (cmd_con(1, argv) < 0) {
+        /* Wait for the WiFi connection */
+        xtimer_sleep(1);
+    }
+
     float value = 0.5;
-    
+    while (1) {
+        
+        
+        
+        
+        xtimer_sleep(5);
+        value += 1;
+    }
+
     return 0;
 }

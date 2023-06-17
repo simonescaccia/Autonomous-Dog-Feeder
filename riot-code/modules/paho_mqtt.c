@@ -39,7 +39,7 @@ static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
 #define COMMAND_TIMEOUT_MS              4000
 
 #ifndef DEFAULT_MQTT_CLIENT_ID
-#define DEFAULT_MQTT_CLIENT_ID          ""
+#define DEFAULT_MQTT_CLIENT_ID          "paho_mqtt_client"
 #endif
 
 #ifndef DEFAULT_MQTT_USER
