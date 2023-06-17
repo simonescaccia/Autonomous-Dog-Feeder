@@ -1,1 +1,5 @@
 riot-code/bin
+MQTT-bridge/config.ini
+MQTT-bridge/pc_ubuntu_iot.private.key 
+MQTT-bridge/pc_ubuntu_iot.cert.pem
+MQTT-bridge/root-CA.crt 

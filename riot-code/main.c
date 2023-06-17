@@ -6,7 +6,7 @@
 
 const gpio_t gpio_dout = GPIO_PIN(0 ,1);
 const gpio_t gpio_sck = GPIO_PIN(0, 2);
-const uint16_t divider = 1;
+const uint16_t divider = 362;
 const uint8_t read_times = 1;
 const hx711_gain_t gain = CHANNEL_A_128;
 
