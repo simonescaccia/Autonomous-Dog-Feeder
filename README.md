@@ -4,6 +4,12 @@
 
 ### Problems we want to solve
 
+#### Main problem
+
+- 
+
+#### Related problems
+
 - Dogs have a daily amount of food they need to eat, according to their age, activity level, and health condition. This amount of food is suggested by the vet or written on the dog food package. We want to make sure that the dog gets the right amount of food every day.
 - Dogs need to eat their food several meals throughout the day. Each meal should be served at a specific time, according to the dog's age and activity level or preference. We want to make sure that the dog gets the right amount of food at the right time.
 - Dog owners may not be able to feed their dogs on time due to work or other commitments.
