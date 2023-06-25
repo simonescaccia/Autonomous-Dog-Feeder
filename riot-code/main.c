@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <inttypes.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "fmt.h"
 #include "xtimer.h"
 #include "driver_hx711.h"
 #include "paho_mqtt_methods.h"
 
+
 #define MAXIMUM_VALUE_LENGHT 10
+
+static const char board_id[] = "id-1";
 
 // Topics
 char* MQTT_TOPIC_WATER = "iot/ADF/water";
@@ -70,12 +75,16 @@ int main(void)
         /* Convert the value to string */
         char* str_value = malloc(sizeof(char*)*MAXIMUM_VALUE_LENGHT);
         fmt_float(str_value, value, 2);
+        /* Concat the string with the deviceId */
+        char* message = malloc(sizeof(char*)*(strlen(board_id)+strlen(str_value)+2));
+        sprintf(message, "%s,%s", board_id, str_value);
         /* Publish the value */
-        char* pub_list[3] = {"cmd_pub", MQTT_TOPIC_WATER, str_value};
+        char* pub_list[3] = {"cmd_pub", MQTT_TOPIC_WATER, message};
         char** pub_argv = (char**)&pub_list;
         cmd_pub(3, pub_argv);
         /* Free space */
         free(str_value);
+        free(message);
         
         xtimer_sleep(5);
         value += 1;
