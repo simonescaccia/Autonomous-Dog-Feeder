@@ -29,7 +29,7 @@ html_home_page = """<!DOCTYPE html>
     Third row contains the amount of food and water consumed 
     -->
     <h3>Date: {start_date} - {end_date}</h2><br>
-    <table>
+    <table style="width:100%">
         <tr>
             <th>Food</th>
             <th>Water</th>
@@ -46,12 +46,12 @@ html_home_page = """<!DOCTYPE html>
     <h4>Choose a date or a date range to display the amount of food and water consumed</h5><br>
     <!-- Add a form to select the date or the date range: start date, end date -->
     <form action="/{path}">
-        <label for="date">Date (DD-MM-YYYY):</label>
+        <label for="date">Date (dd-mm-yyyy):</label>
         <input type="text" id="date" name="date">
         <h4>Or</h5>
-        <label for="start_date">Start date (DD-MM-YYYY):</label>
+        <label for="start_date">Start date (dd-mm-yyyy):</label>
         <input type="text" id="start_date" name="start_date"><br><br>
-        <label for="end_date">End date (DD-MM-YYYY):</label>
+        <label for="end_date">End date (dd-mm-yyyy):</label>
         <input type="text" id="end_date" name="end_date"><br><br>
         <input type="submit" value="Submit">
     </form>
@@ -79,7 +79,24 @@ def get_data_interval(table_str: str, start: datetime, end: datetime):
             ':end': end_timestamp
         }
     )
-    
+
+def format_dict(check: bool, message="", start_str="", end_str="", start_timestamp=0, end_timestamp=0):
+    if check:
+        return {
+            "check": check,
+            "params": {
+                "start": start_str,
+                "end": end_str,
+                "start_timestamp": start_timestamp,
+                "end_timestamp": end_timestamp
+            }
+        }
+    else:
+        return {
+            "check": check,
+            "message": message
+        }
+
 def sanity_check(event):
     logger.info("Event: {}\n".format(event))
 
@@ -106,46 +123,66 @@ def sanity_check(event):
             date_datetime = datetime.datetime.strptime(date, DATE_FORMAT)
             start = date_datetime.strftime(DATE_FORMAT)
             # Set the end date to be the same as the start date plus one day
-            end = (date_datetime + datetime.timedelta(days=1)).strftime(DATE_FORMAT)
+            end_datetime = date_datetime + datetime.timedelta(days=1)
+            end = end_datetime.strftime(DATE_FORMAT)
         except ValueError:
-            return {"check": False, "message": "Invalid date format. Must be DD-MM-YYYY"}
+            return format_dict(False, "Invalid date format. Must be dd-mm-yyyy")
         else:
-            return {"check": True, "params": {"start": start, "end": end}}
+            return format_dict(
+                True, 
+                start_str=start, 
+                end_str=end, 
+                start_timestamp=int(date_datetime.timestamp()), 
+                end_timestamp=int(end_datetime.timestamp())
+            )
     
     if(start_date == ''):
-        # No date and start date specified, then compute today's date in the format DD-MM-YYYY
-        now = datetime.datetime.now()
-        start = now.strftime(DATE_FORMAT)
-        end = (now + datetime.timedelta(days=1)).strftime(DATE_FORMAT)
-        return {"check": True, "params": {"start": start, "end": end}}
+        # No date and start date specified, then compute today's date in the format dd-mm-yyyy
+        start_datetime = datetime.datetime.now()
+        start = start_datetime.strftime(DATE_FORMAT)
+        end_datetime = start_datetime + datetime.timedelta(days=1)
+        end = end_datetime.strftime(DATE_FORMAT)
+        return format_dict(
+            True, 
+            start_str=start, 
+            end_str=end, 
+            start_timestamp=int(start_datetime.timestamp()), 
+            end_timestamp=int(end_datetime.timestamp())
+        )
     else:
         try:
             start_datetime = datetime.datetime.strptime(start_date, DATE_FORMAT)
             start = start_datetime.strftime(DATE_FORMAT)
         except ValueError:
-            return {"check": False, "message": "Invalid start date format. Must be DD-MM-YYYY"}
+            return format_dict(False, "Invalid start date format. Must be dd-mm-yyyy")
 
-    # Check if end date is not empty then check if it follows the format DD-MM-YYYY
+    # Check if end date is not empty then check if it follows the format dd-mm-yyyy
     if(end_date != ''):
         try:
             end_datetime = datetime.datetime.strptime(end_date, DATE_FORMAT) + datetime.timedelta(days=1)
             end = end_datetime.strftime(DATE_FORMAT)
         except ValueError:
-            return {"check": False, "message": "Invalid end date format. Must be DD-MM-YYYY"}
+            return format_dict(False, "Invalid end date format. Must be dd-mm-yyyy")
 
     # Check if the end date is not empty and if it is before the start date
     if(end_datetime <= start_datetime):
-        return {"check": False, "message": "End date must be after start date"}
+        return format_dict(False, "End date must be after start date")
     
     # Check if the start date is not in the future
     if(start_datetime > datetime.datetime.now()):
-        return {"check": False, "message": "Start date must be before today"}
+        return format_dict(False, "Start date must be before today")
     
     # Check if the end date is not in the future
     if(end_datetime > datetime.datetime.now() + datetime.timedelta(days=1)):
-        return {"check": False, "message": "End date must be before today"}
+        return format_dict(False, "End date must be before today")
     
-    return {"check": True, "params": {"start": start, "end": end}}
+    return format_dict(
+        True, 
+        start_str=start, 
+        end_str=end, 
+        start_timestamp=int(start_datetime.timestamp()), 
+        end_timestamp=int(end_datetime.timestamp())
+    )
 
 
 def lambda_handler(event, context):
@@ -157,6 +194,18 @@ def lambda_handler(event, context):
             'statusCode': 400,
             'body': json.dumps(params['message'])
         }
+    
+    # Convert the start and end timestamps to datetime objects
+    start_datetime = datetime.datetime.fromtimestamp(params['params']['start_timestamp'])
+    end_datetime = datetime.datetime.fromtimestamp(params['params']['end_timestamp'])
+    
+    # Get the data from the food table and the water table
+    food_data = get_data_interval('food', start_datetime, end_datetime)
+    water_data = get_data_interval('water', start_datetime, end_datetime)
+
+    # Log the data
+    logger.info("Food data: {}\n".format(food_data))
+    logger.info("Water data: {}\n".format(water_data))
 
     return {
         'statusCode': 200,

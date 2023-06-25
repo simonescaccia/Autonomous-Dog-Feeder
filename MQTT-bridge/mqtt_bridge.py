@@ -11,6 +11,7 @@ DEBUG = 1
 
 # Constants
 VALUE = "Value"
+DEVICEID = "DeviceId"
 
 # Load configurations
 config = ConfigParser()
@@ -36,13 +37,18 @@ MQTT_TOPIC_FOOD = "iot/ADF/food"
 
 def on_message(_client, _userdata, message):
 
-    value = message.payload.decode('utf-8')
+    # payload: DeviceId,value
+    payload = message.payload.decode('utf-8')
+
+    # Get the DeviceId and the value from the payload
+    device_id, value = payload.split(',')
+
     print("Message received, topic: ", message.topic, " Value: ", value)
 
     # Check the topic of the message
     if (message.topic == MQTT_TOPIC_FOOD or message.topic == MQTT_TOPIC_WATER):
         # Send the message to AWS
-        aws_payload = '{"'+VALUE+'":"'+value+'"}'
+        aws_payload = '{"'+VALUE+'":"'+value+'","'+DEVICEID+'":"'+device_id+'"}'
         if(DEBUG):
             print("AWS payload: ",aws_payload)
 
