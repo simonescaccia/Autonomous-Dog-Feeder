@@ -86,7 +86,7 @@ int main(void)
         free(str_value);
         free(message);
         
-        xtimer_sleep(5);
+        xtimer_sleep(10);
         value += 1;
     }
 

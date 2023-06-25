@@ -1,7 +1,7 @@
 #ifndef PAHO_MQTT_H
 #define PAHO_MQTT_H
 
-#define MQTT_BRIDGE_IP "192.168.194.113"
+#define MQTT_BRIDGE_IP "192.168.238.113"
 
 int init_paho_mqtt (void);
 int cmd_unsub(int argc, char **argv);
