@@ -74,7 +74,8 @@ int main(void)
     while (1) {
         /* Convert the value to string */
         char* str_value = malloc(sizeof(char*)*MAXIMUM_VALUE_LENGHT);
-        fmt_float(str_value, value, 2);
+        int chars = fmt_float(str_value, value, 2);
+        str_value[chars] = '\0';
         /* Concat the string with the deviceId */
         char* message = malloc(sizeof(char*)*(strlen(board_id)+strlen(str_value)+2));
         sprintf(message, "%s,%s", board_id, str_value);

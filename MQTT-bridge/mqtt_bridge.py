@@ -3,8 +3,6 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
 import paho.mqtt.client as mqtt
 import json
-import time
-from datetime import datetime
 from configparser import ConfigParser
 
 DEBUG = 1
@@ -48,11 +46,14 @@ def on_message(_client, _userdata, message):
     # Check the topic of the message
     if (message.topic == MQTT_TOPIC_FOOD or message.topic == MQTT_TOPIC_WATER):
         # Send the message to AWS
-        aws_payload = '{"'+VALUE+'":"'+value+'","'+DEVICEID+'":"'+device_id+'"}'
+        aws_payload = {
+            VALUE: value,
+            DEVICEID: device_id
+        }
         if(DEBUG):
-            print("AWS payload: ",aws_payload)
+            print("AWS payload: {}".format(json.dumps(aws_payload)))
 
-        is_published = myMQTTClient.publish(message.topic, aws_payload, 2)
+        is_published = myMQTTClient.publish(message.topic, json.dumps(aws_payload), 2)
 
         if(DEBUG):
             print("Message published: ", is_published)
