@@ -6,7 +6,9 @@
 
 #### Main problem
 
-- 
+- During the summer, some families leaves their dog because they do not have the opportunity or the desire to move with them. (data not found but a lot of news reports every year in the summer are released).
+Duration:  
+La maggior parte sceglie di andare via tra giugno, luglio e agosto per periodi anche abbastanza lunghi: il 59% ha infatti indicato dalle 4 alle 7 notti via. Da considerare che la media 2021-2022 delle vacanze degli italiani nel periodo estivo è stata di 4 notti ([source](https://www.nostrofiglio.it/bimbi-in-viaggio/turismo-family-in-italia#:~:text=La%20maggior%20parte%20sceglie%20di,%C3%A8%20stata%20di%204%20notti.)). Then, in order to help dogs and families in this problem, we want to provide an autonomous dog feeder able to feed the pet for at least 7 days. The goal of this project is to build a reliable alternative to the neglecting of dogs during the summer.
 
 #### Related problems
 
