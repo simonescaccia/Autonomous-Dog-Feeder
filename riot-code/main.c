@@ -11,11 +11,7 @@
 
 #define MAXIMUM_VALUE_LENGHT 10
 
-static const char board_id[] = "id-1";
-
-// Topics
-char* MQTT_TOPIC_WATER = "iot/ADF/water";
-char* MQTT_TOPIC_FOOD = "iot/ADF/food";
+static const char board_id[] = "1";
 
 const gpio_t gpio_dout = GPIO_PIN(0 ,1);
 const gpio_t gpio_sck = GPIO_PIN(0, 2);
@@ -58,6 +54,10 @@ static void _sample (void) {
 
 int main(void)
 {
+
+    // Topics
+    char* MQTT_TOPIC_WATER = sprintf("iot/ADF/%s/water", board_id);
+    char* MQTT_TOPIC_FOOD = sprintf("iot/ADF/%s/food", board_id);
 
     init_paho_mqtt();
     _sample();

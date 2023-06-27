@@ -30,16 +30,13 @@ AWS_IOT_PRIVATE_KEY_PATH = "pc_ubuntu_iot.private.key"
 AWS_IOT_CERTIFICATE_PATH = "pc_ubuntu_iot.cert.pem"
 
 # Topics
-MQTT_TOPIC_WATER = "iot/ADF/water"
-MQTT_TOPIC_FOOD = "iot/ADF/food"
+MQTT_TOPIC_WATER = "iot/ADF/1/water"
+MQTT_TOPIC_FOOD = "iot/ADF/1/food"
 
 def on_message(_client, _userdata, message):
 
-    # payload: DeviceId,value
-    payload = message.payload.decode('utf-8')
-
-    # Get the DeviceId and the value from the payload
-    device_id, value = payload.split(',')
+    # payload: value
+    value = message.payload.decode('utf-8')
 
     print("Message received, topic: ", message.topic, " Value: ", value)
 
@@ -47,13 +44,12 @@ def on_message(_client, _userdata, message):
     if (message.topic == MQTT_TOPIC_FOOD or message.topic == MQTT_TOPIC_WATER):
         # Send the message to AWS
         aws_payload = {
-            VALUE: value,
-            DEVICEID: device_id
+            VALUE: value
         }
         if(DEBUG):
             print("AWS payload: {}".format(json.dumps(aws_payload)))
 
-        is_published = myMQTTClient.publish(message.topic, json.dumps(aws_payload), 2)
+        is_published = myMQTTClient.publish(message.topic, json.dumps(aws_payload), 1)
 
         if(DEBUG):
             print("Message published: ", is_published)
