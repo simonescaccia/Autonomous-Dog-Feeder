@@ -61,10 +61,11 @@ html_home_page = """<!DOCTYPE html>
 """
 
 # Query the food table for the last 30 days
-def get_data_interval(table_str: str, start: datetime, end: datetime):
-    # Compute the start and end timestamps
-    start_timestamp = int(start.timestamp())
-    end_timestamp = int(end.timestamp())
+def get_data_interval(table_str: str, start_timestamp: int, end_timestamp: int):
+
+    # Print timestamps to log
+    logger.info("Start timestamp: {}\n".format(start_timestamp))
+    logger.info("End timestamp: {}\n".format(end_timestamp))
 
     # Check which table to query
     if(table_str == 'food'):
@@ -73,8 +74,12 @@ def get_data_interval(table_str: str, start: datetime, end: datetime):
         table = water_table    
             
     return table.query(
-        KeyConditionExpression='Timestamp > :start and Timestamp < :end',
+        KeyConditionExpression='DeviceId = :id AND #time BETWEEN :start AND :end',
+        ExpressionAttributeNames={
+            '#time': 'Time'
+        },
         ExpressionAttributeValues={
+            ':id': '1',
             ':start': start_timestamp,
             ':end': end_timestamp
         }
@@ -120,10 +125,10 @@ def sanity_check(event):
     if(date != ''):
         # Single date not specified
         try:
-            date_datetime = datetime.datetime.strptime(date, DATE_FORMAT)
-            start = date_datetime.strftime(DATE_FORMAT)
+            start_datetime = datetime.datetime.strptime(date, DATE_FORMAT)
+            start = start_datetime.strftime(DATE_FORMAT)
             # Set the end date to be the same as the start date plus one day
-            end_datetime = date_datetime + datetime.timedelta(days=1)
+            end_datetime = start_datetime + datetime.timedelta(days=1)
             end = end_datetime.strftime(DATE_FORMAT)
         except ValueError:
             return format_dict(False, "Invalid date format. Must be dd-mm-yyyy")
@@ -131,8 +136,9 @@ def sanity_check(event):
             return format_dict(
                 True, 
                 start_str=start, 
-                end_str=end, 
-                start_timestamp=int(date_datetime.timestamp()), 
+                end_str=end,
+                # Convert datetime to timestamp in milliseconds
+                start_timestamp=int(start_datetime.timestamp()),
                 end_timestamp=int(end_datetime.timestamp())
             )
     
@@ -209,7 +215,7 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        "headers": {"Content-Type": "text/html"},
+        'headers': {"Content-Type": "text/html"},
         'body': html_home_page.format(
             start_date=params['params']['start'], 
             end_date=params['params']['end'],
