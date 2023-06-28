@@ -93,6 +93,12 @@ Another approach is to send the data to the cloud-based service and build the gl
 
 ## What are the connected components, the protocols to connect them and the overall IoT architecture?
 
+![aws_architecture](./images/aws-architecture.drawio.png)
+
+<br> <br>
+
+[Web site](https://6qxfwqry1k.execute-api.us-east-1.amazonaws.com/prod/autonomous-dog-feeder)
+
 ## Other resources
 
 - [hackster.io]()
