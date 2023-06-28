@@ -143,8 +143,8 @@ def sanity_check(event):
             )
     
     if(start_date == ''):
-        # No date and start date specified, then compute today's date in the format dd-mm-yyyy
-        start_datetime = datetime.datetime.now()
+        # No date and start date specified, then compute today's date in the format dd-mm-yyyy setting the hour to 00:00:00
+        start_datetime = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         start = start_datetime.strftime(DATE_FORMAT)
         end_datetime = start_datetime + datetime.timedelta(days=1)
         end = end_datetime.strftime(DATE_FORMAT)
@@ -201,13 +201,13 @@ def lambda_handler(event, context):
             'body': json.dumps(params['message'])
         }
     
-    # Convert the start and end timestamps to datetime objects
-    start_datetime = datetime.datetime.fromtimestamp(params['params']['start_timestamp'])
-    end_datetime = datetime.datetime.fromtimestamp(params['params']['end_timestamp'])
+    # Get timestamp from params
+    start_timestamp = params['params']['start_timestamp']
+    end_timestamp = params['params']['end_timestamp']
     
     # Get the data from the food table and the water table
-    food_data = get_data_interval('food', start_datetime, end_datetime)
-    water_data = get_data_interval('water', start_datetime, end_datetime)
+    food_data = get_data_interval('food', start_timestamp, end_timestamp)
+    water_data = get_data_interval('water', start_timestamp, end_timestamp)
 
     # Log the data
     logger.info("Food data: {}\n".format(food_data))
