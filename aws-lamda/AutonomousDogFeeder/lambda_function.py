@@ -20,6 +20,7 @@ html_home_page = """<!DOCTYPE html>
 <head>
     <title>Autonomous Dog Feeder</title>
 </head>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 <body>
     <h1>Autonomous Dog Feeder</h1>
     <!-- 
@@ -35,7 +36,32 @@ html_home_page = """<!DOCTYPE html>
             <th>Water</th>
         </tr>
         <tr>
-            <td>Graph</td>
+            <td>
+                <div id="foodChart" style="width:100%; max-width:600px; height:500px;"></div>
+                <script>
+                google.charts.load('current',{packages:['corechart']});
+                google.charts.setOnLoadCallback(drawChart);
+
+                function drawChart() {
+
+                // Set Data
+                const data = google.visualization.arrayToDataTable({food_data});
+
+                // Set Options
+                const options = {
+                title: 'Food grams vs. Time',
+                hAxis: {title: 'Food grams'},
+                vAxis: {title: 'Time in hours:minutes:seconds'},
+                legend: 'none'
+                };
+
+                // Draw
+                const chart = new google.visualization.ScatterChart(document.getElementById('foodChart'));
+                chart.draw(data, options);
+
+                }
+                </script>
+            </td>
             <td>Graph</td>
         </tr>
         <tr>
@@ -62,10 +88,6 @@ html_home_page = """<!DOCTYPE html>
 
 # Query the food table for the last 30 days
 def get_data_interval(table_str: str, start_timestamp: int, end_timestamp: int):
-
-    # Print timestamps to log
-    logger.info("Start timestamp: {}\n".format(start_timestamp))
-    logger.info("End timestamp: {}\n".format(end_timestamp))
 
     # Check which table to query
     if(table_str == 'food'):
@@ -190,6 +212,22 @@ def sanity_check(event):
         end_timestamp=int(end_datetime.timestamp())
     )
 
+def format_data_to_plot(data):
+    # Build a list of lists containing the time and the value
+    data_formatted = []
+
+    items = data['Items']
+    # For each item, get the Time and the Value
+    for item in items:
+        # From the Time get the hour, minute and second
+        time = datetime.datetime.fromtimestamp(int(item['Time'])).strftime('%H:%M:%S')
+        # Get the value
+        value = item['Value']['Value']
+        # Append the time and the value to the list
+        data_formatted.append([time, value])
+
+    return data_formatted
+
 
 def lambda_handler(event, context):
 
@@ -204,6 +242,10 @@ def lambda_handler(event, context):
     # Get timestamp from params
     start_timestamp = params['params']['start_timestamp']
     end_timestamp = params['params']['end_timestamp']
+
+    # Print timestamps to log
+    logger.info("Start timestamp: {}\n".format(start_timestamp))
+    logger.info("End timestamp: {}\n".format(end_timestamp))
     
     # Get the data from the food table and the water table
     food_data = get_data_interval('food', start_timestamp, end_timestamp)
@@ -213,12 +255,17 @@ def lambda_handler(event, context):
     logger.info("Food data: {}\n".format(food_data))
     logger.info("Water data: {}\n".format(water_data))
 
+    # Create the data to be plotted
+    food_data_formatted = format_data_to_plot(food_data)
+    water_data_formatted = format_data_to_plot(water_data)
+
     return {
         'statusCode': 200,
         'headers': {"Content-Type": "text/html"},
         'body': html_home_page.format(
             start_date=params['params']['start'], 
             end_date=params['params']['end'],
+            food_data=food_data_formatted,
             path='{}/{}'.format(stage, resource)
         )
     }
