@@ -95,9 +95,27 @@ Another approach is to send the data to the cloud-based service and build the gl
 
 ## What are the connected components, the protocols to connect them and the overall IoT architecture?
 
+### Network diagram
+
 Data are collected from the load cell sensors via the HX711 amplifier, which is connected to the ESP32. The ESP32 makes some local data computation and sends the data to an MQTT bridge via the MQTT protocol. The MQTT bridge sends this data to an AWS endpoint. This AWS endpoint implements some rules to store the data in a DynamoDB table. Finally, the data are visualized on a web page using the AWS API Gateway which triggers a Lambda function to query the DynamoDB table and return the web page. [Web site](https://6qxfwqry1k.execute-api.us-east-1.amazonaws.com/prod/autonomous-dog-feeder)
 
 ![aws_architecture](./images/aws-architecture.drawio.png)
+
+### Software components
+
+- Device level:
+  - Food dispenser: at a given schedule, the ESP32 will shake the first servo to avoid the food getting stuck in the dispenser, then it will activate the second servo to pour the food into the bowl. The ESP32 will monitor the weight of the food in the bowl through the load cell and close the second servo when the weight of the food reaches the desired value (food per day/number of meals per day). Then the ESP32 will stop the first servo.
+  - Food data computation: consider the first meal, the bowl will be filled with food, so when we sample a weight smaller than the weight of the previous sample, we can assume that the dog has eaten something, so we can compute the weight of the food eaten by subtracting the weight of the previous sample from the weight of the current sample. Then we will send this data to the cloud-based service. If the bowl is empty, then we can assume that the dog has finished its meal, so we can stop the sensing until a new scheduled meal is served.
+  - Water dispenser: we want that the bowl is always filled with water at a certain level. So, at the first activation, the ESP32 will activate the water pump to fill the bowl with water and stop the water pump when the weight of the water reaches the desired value (water bowl capacity), using the load cell to monitor the weight of the water in the bowl. If the weight of the water bowl reaches a certain level (water bowl capacity/2), then the ESP32 will activate the water pump to fill the bowl with water and stop the water pump when the weight of the water reaches the desired value (water bowl capacity), using the load cell to monitor the weight of the water in the bowl.
+  - Water data computation: when we sample a weight smaller than the weight of the previous sample, we can assume that the dog has drunk something, so we can compute the weight of the water drunk by subtracting the weight of the previous sample from the weight of the current sample. Then we will send this data to the cloud-based service.
+- Cloud level:
+  - Lambda data query: the Lambda function will query the DynamoDB table selecting the samples in a given interval of time.
+  - Lambda data computation: the Lambda function will compute the sum of the food eaten and the sum of the water drunk in a given interval of time.
+  - Lambda data visualization: since we send only the samples with a value greater than 0, we need to add to these samples the samples with a value equal to 0, to have a complete visualization of the data. Then the Lambda function will return a web page with the data computed.
+
+### Software architecture
+
+![software_architecture](./images/software_architecture.drawio.png)
 
 ## Other resources
 
