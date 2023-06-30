@@ -32,7 +32,7 @@ html_home_page = """<!DOCTYPE html>
 <body>
     <h1>Autonomous Dog Feeder</h1>
     <a href="autonomous-dog-feeder?date=28-06-2023"><h3>Demo data</h3></a>
-    <h3>Date: {start_date} - {end_date}</h2><br>
+    <h3>Date: {start_date} - {end_date}, Number of days: {number_of_days}</h3><br>
     <table style="width:100%">
         <tr>
             <th>Food</th>
@@ -96,6 +96,7 @@ html_home_page = """<!DOCTYPE html>
             <td>
                 Food per day: {food_per_day} g<br>
                 Number of meals per day: {number_of_meals}<br>
+                Food consumed: {food_consumed} g
             </td>
             <td>
                 Water bowl capacity: {water_bowl_capacity} ml<br>
@@ -271,16 +272,16 @@ def format_data_to_plot(data):
 
     return data_formatted
 
-def compute_water_consumed(data, bowl_capacity):
+def compute_consumption(data):
     # Skip the first item of the list because it is the header
-    water_data_formatted = data[1:]
+    data_formatted = data[1:]
     # Compute the total water consumed
-    total_water_consumed = 0
-    for item in water_data_formatted:
+    total_consumption = 0
+    for item in data_formatted:
         # Compute the diffeerence between the bowl capacity and the water level
-        total_water_consumed += bowl_capacity - item[1]
+        total_consumption += item[1]
 
-    return total_water_consumed
+    return total_consumption
 
 def lambda_handler(event, context):
 
@@ -292,20 +293,27 @@ def lambda_handler(event, context):
             'body': json.dumps(params['message'])
         }
     
+
     # Get settings
     settings = get_settings()
 
     # Log the settings
     logger.info("Settings: {}\n".format(settings))
     
+
     # Get timestamp from params
     start_timestamp = params['params']['start_timestamp']
     end_timestamp = params['params']['end_timestamp']
 
+    # Compute the difference in days between the start and the end timestamp
+    days = int((end_timestamp - start_timestamp) / (24 * 60 * 60))
+
     # Print timestamps to log
     logger.info("Start timestamp: {}\n".format(start_timestamp))
     logger.info("End timestamp: {}\n".format(end_timestamp))
+    logger.info("Days: {}\n".format(days))
     
+
     # Get the data from the food table and the water table
     food_data = get_data_interval('food', start_timestamp, end_timestamp)
     water_data = get_data_interval('water', start_timestamp, end_timestamp)
@@ -313,6 +321,7 @@ def lambda_handler(event, context):
     # Log the data
     logger.info("Food data: {}\n".format(food_data))
     logger.info("Water data: {}\n".format(water_data))
+
 
     # Create the data to be plotted
     food_data_formatted = format_data_to_plot(food_data)
@@ -322,18 +331,22 @@ def lambda_handler(event, context):
     logger.info("Food data formatted: {}\n".format(food_data_formatted))
     logger.info("Water data formatted: {}\n".format(water_data_formatted))
 
+
     # Compute the amount of water consumed
-    water_consumed = compute_water_consumed(water_data_formatted, int(settings['Items'][0]['WaterBowlCapacityMilliliters']))
+    water_consumed = compute_consumption(water_data_formatted)
+    food_consumed = compute_consumption(food_data_formatted)
 
     html_home_page_formatted = html_home_page.format(
-            start_date=params['params']['start'], 
-            end_date=params['params']['end'],
-            food_data=food_data_formatted,
-            water_data=water_data_formatted,
-            food_per_day=settings['Items'][0]['DailyFoodGrams'],
-            number_of_meals=settings['Items'][0]['NumberOfMealsPerDay'],
-            water_bowl_capacity=settings['Items'][0]['WaterBowlCapacityMilliliters'],
-            water_consumed=water_consumed,
+            start_date =            params['params']['start'], 
+            end_date =              params['params']['end'],
+            number_of_days =        days,
+            food_data =             food_data_formatted,
+            water_data =            water_data_formatted,
+            food_per_day =          settings['Items'][0]['DailyFoodGrams'],
+            number_of_meals =       settings['Items'][0]['NumberOfMealsPerDay'],
+            water_bowl_capacity =   settings['Items'][0]['WaterBowlCapacityMilliliters'],
+            water_consumed =        water_consumed,
+            food_consumed =         food_consumed,
             path='{}/{}'.format(stage, resource)
         )
     
