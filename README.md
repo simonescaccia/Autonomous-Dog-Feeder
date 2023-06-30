@@ -6,9 +6,9 @@
 
 #### Main problem
 
-- During the summer, some families leaves their dog because they do not have the opportunity or the desire to move with them. (data not found but a lot of news reports every year in the summer are released).
+- During the summer, some families leave their dogs because they do not have the opportunity or the desire to move with them. (data not found but a lot of news reports every year in the summer are released).
 Duration:  
-La maggior parte sceglie di andare via tra giugno, luglio e agosto per periodi anche abbastanza lunghi: il 59% ha infatti indicato dalle 4 alle 7 notti via. Da considerare che la media 2021-2022 delle vacanze degli italiani nel periodo estivo è stata di 4 notti ([source](https://www.nostrofiglio.it/bimbi-in-viaggio/turismo-family-in-italia#:~:text=La%20maggior%20parte%20sceglie%20di,%C3%A8%20stata%20di%204%20notti.)). Then, in order to help dogs and families in this problem, we want to provide an autonomous dog feeder able to feed the pet for at least 7 days. The goal of this project is to build a reliable alternative to the neglecting of dogs during the summer.
+La maggior parte sceglie di andare via tra giugno, luglio e agosto per periodi anche abbastanza lunghi: il 59% ha infatti indicato dalle 4 alle 7 notti via. Da considerare che la media 2021-2022 delle vacanze degli italiani nel periodo estivo è stata di 4 notti ([source](https://www.nostrofiglio.it/bimbi-in-viaggio/turismo-family-in-italia#:~:text=La%20maggior%20parte%20sceglie%20di,%C3%A8%20stata%20di%204%20notti.)). Then, to help dogs and families in this problem, we want to provide an autonomous dog feeder able to feed the pet for at least 7 days. The goal of this project is to build a reliable alternative to the neglect of dogs during the summer.
 
 #### Related problems
 
@@ -45,6 +45,8 @@ The activation of the water pump will be triggered by the load cell sensor only 
 
 ## What data are collected and by which sensors?
 
+We want to collect the food and water consumption of the dog, during the day. By observing the sample data on load cells, we want to compute locally the amount of food and water consumed by the dog. Then, we want to send the computed data to the cloud-based service to store them and make them available to the dog owner.
+
 ### Sensors accuracy, the unit of measurement and periodicity
 
 - The **load cell** sensor to measure the weight of the food in the bowl has a capacity of 5 Kg since the 1 Kg load cell is not suitable for large breeds of dogs.
@@ -63,8 +65,8 @@ Using the sampling theorem, we need to sample every at least 30 seconds, so we c
   
 ### Collected data velocity, variability and variety
 
-- Food data: the velocity of the data is one sample every 30 seconds, but only after the food is served and until there is food in the bowl, otherwise the data is not sampled (variability). The variety of data goes from the weight of a single meal, specified by the dog owner, to 0 g. Peaks in the weight of the food can be caused by the dog pressing the bowl while eating.
-- Water data: the velocity of the data is one sample every 30 seconds, at any time (variability). The variety of data goes from the capacity of the bowl, defined by the vendor of the autonomous dog feeder, to 0 L. Peaks in the weight of the water can be caused by the dog pressing the bowl while drinking.
+- Food data: the velocity of the data is one sample every 30 seconds, but only if the bowl is not empty and the dog has eaten something, otherwise the data is not collected (variability). The variety of data goes from the weight of a single meal, specified by the dog owner, to 0 g excluded. Peaks in the weight of the food can be caused by the dog pressing the bowl while eating.
+- Water data: the velocity of the data is one sample every 30 seconds, but only if the dog has drunk something, otherwise the data is not collected (variability). The variety of data goes from the capacity of the bowl, defined by the vendor of the autonomous dog feeder, to 0 L excluded. Peaks in the weight of the water can be caused by the dog pressing the bowl while drinking.
 
 ### Data analysis
 
@@ -93,11 +95,9 @@ Another approach is to send the data to the cloud-based service and build the gl
 
 ## What are the connected components, the protocols to connect them and the overall IoT architecture?
 
+Data are collected from the load cell sensors via the HX711 amplifier, which is connected to the ESP32. The ESP32 makes some local data computation and sends the data to an MQTT bridge via the MQTT protocol. The MQTT bridge sends this data to an AWS endpoint. This AWS endpoint implements some rules to store the data in a DynamoDB table. Finally, the data are visualized on a web page using the AWS API Gateway which triggers a Lambda function to query the DynamoDB table and return the web page. [Web site](https://6qxfwqry1k.execute-api.us-east-1.amazonaws.com/prod/autonomous-dog-feeder)
+
 ![aws_architecture](./images/aws-architecture.drawio.png)
-
-<br> <br>
-
-[Web site](https://6qxfwqry1k.execute-api.us-east-1.amazonaws.com/prod/autonomous-dog-feeder)
 
 ## Other resources
 

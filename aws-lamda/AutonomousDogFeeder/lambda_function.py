@@ -10,25 +10,28 @@ stage = 'prod'
 resource = 'autonomous-dog-feeder'
 
 DATE_FORMAT = '%d-%m-%Y'
+DATE_TIME_FORMAT = '%d-%m-%Y %H:%M:%S'
 
 dynamodb = boto3.resource('dynamodb')
 food_table = dynamodb.Table('Food')
 water_table = dynamodb.Table('Water')
+settings_table = dynamodb.Table('Settings')
+
+DEVICE_ID = '1'
 
 html_home_page = """<!DOCTYPE html>
 <html>
 <head>
     <title>Autonomous Dog Feeder</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        th   {{width: 50%}}
+        td   {{width: 50%}}
+    </style>
 </head>
-<script src="https://www.gstatic.com/charts/loader.js"></script>
 <body>
     <h1>Autonomous Dog Feeder</h1>
-    <!-- 
-    Add a table with two columns
-    First row is the header: Food, Water
-    Second row contains graphs
-    Third row contains the amount of food and water consumed 
-    -->
+    <a href="autonomous-dog-feeder?date=28-06-2023"><h3>Demo data</h3></a>
     <h3>Date: {start_date} - {end_date}</h2><br>
     <table style="width:100%">
         <tr>
@@ -37,36 +40,67 @@ html_home_page = """<!DOCTYPE html>
         </tr>
         <tr>
             <td>
-                <div id="foodChart" style="width:100%; max-width:600px; height:500px;"></div>
+                <div id="foodChart" style="width:100%; height:500px;"></div>
                 <script>
-                google.charts.load('current',{packages:['corechart']});
+                google.charts.load('current',{{packages:['corechart']}});
                 google.charts.setOnLoadCallback(drawChart);
 
-                function drawChart() {
+                function drawChart() {{
 
                 // Set Data
                 const data = google.visualization.arrayToDataTable({food_data});
 
                 // Set Options
-                const options = {
+                const options = {{
                 title: 'Food grams vs. Time',
-                hAxis: {title: 'Food grams'},
-                vAxis: {title: 'Time in hours:minutes:seconds'},
+                vAxis: {{title: 'Food grams'}},
+                hAxis: {{title: 'Time'}},
                 legend: 'none'
-                };
+                }};
 
                 // Draw
                 const chart = new google.visualization.ScatterChart(document.getElementById('foodChart'));
                 chart.draw(data, options);
 
-                }
+                }}
                 </script>
             </td>
-            <td>Graph</td>
+            <td>
+                <div id="waterChart" style="width:100%; height:500px;"></div>
+                <script>
+                google.charts.load('current',{{packages:['corechart']}});
+                google.charts.setOnLoadCallback(drawChart);
+
+                function drawChart() {{
+
+                // Set Data
+                const data = google.visualization.arrayToDataTable({water_data});
+
+                // Set Options
+                const options = {{
+                title: 'Water milliliters vs. Time',
+                vAxis: {{title: 'Water milliliters'}},
+                hAxis: {{title: 'Time'}},
+                legend: 'none'
+                }};
+
+                // Draw
+                const chart = new google.visualization.ScatterChart(document.getElementById('waterChart'));
+                chart.draw(data, options);
+
+                }}
+                </script>
+            </td>
         </tr>
         <tr>
-            <td>Amount</td>
-            <td>Amount</td>
+            <td>
+                Food per day: {food_per_day} g<br>
+                Number of meals per day: {number_of_meals}<br>
+            </td>
+            <td>
+                Water bowl capacity: {water_bowl_capacity} ml<br>
+                Water consumed: {water_consumed} ml
+            </td>
         </tr>
     </table><br><br>
     <h4>Choose a date or a date range to display the amount of food and water consumed</h5><br>
@@ -101,9 +135,18 @@ def get_data_interval(table_str: str, start_timestamp: int, end_timestamp: int):
             '#time': 'Time'
         },
         ExpressionAttributeValues={
-            ':id': '1',
+            ':id': DEVICE_ID,
             ':start': start_timestamp,
             ':end': end_timestamp
+        }
+    )
+
+def get_settings():
+
+    return settings_table.query(
+        KeyConditionExpression='DeviceId = :id',
+        ExpressionAttributeValues={
+            ':id': DEVICE_ID
         }
     )
 
@@ -148,10 +191,10 @@ def sanity_check(event):
         # Single date not specified
         try:
             start_datetime = datetime.datetime.strptime(date, DATE_FORMAT)
-            start = start_datetime.strftime(DATE_FORMAT)
+            start = start_datetime.strftime(DATE_TIME_FORMAT)
             # Set the end date to be the same as the start date plus one day
             end_datetime = start_datetime + datetime.timedelta(days=1)
-            end = end_datetime.strftime(DATE_FORMAT)
+            end = end_datetime.strftime(DATE_TIME_FORMAT)
         except ValueError:
             return format_dict(False, "Invalid date format. Must be dd-mm-yyyy")
         else:
@@ -167,9 +210,9 @@ def sanity_check(event):
     if(start_date == ''):
         # No date and start date specified, then compute today's date in the format dd-mm-yyyy setting the hour to 00:00:00
         start_datetime = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        start = start_datetime.strftime(DATE_FORMAT)
+        start = start_datetime.strftime(DATE_TIME_FORMAT)
         end_datetime = start_datetime + datetime.timedelta(days=1)
-        end = end_datetime.strftime(DATE_FORMAT)
+        end = end_datetime.strftime(DATE_TIME_FORMAT)
         return format_dict(
             True, 
             start_str=start, 
@@ -180,7 +223,7 @@ def sanity_check(event):
     else:
         try:
             start_datetime = datetime.datetime.strptime(start_date, DATE_FORMAT)
-            start = start_datetime.strftime(DATE_FORMAT)
+            start = start_datetime.strftime(DATE_TIME_FORMAT)
         except ValueError:
             return format_dict(False, "Invalid start date format. Must be dd-mm-yyyy")
 
@@ -188,7 +231,7 @@ def sanity_check(event):
     if(end_date != ''):
         try:
             end_datetime = datetime.datetime.strptime(end_date, DATE_FORMAT) + datetime.timedelta(days=1)
-            end = end_datetime.strftime(DATE_FORMAT)
+            end = end_datetime.strftime(DATE_TIME_FORMAT)
         except ValueError:
             return format_dict(False, "Invalid end date format. Must be dd-mm-yyyy")
 
@@ -214,20 +257,30 @@ def sanity_check(event):
 
 def format_data_to_plot(data):
     # Build a list of lists containing the time and the value
-    data_formatted = []
+    data_formatted = [["Time", "Food"]]
 
     items = data['Items']
     # For each item, get the Time and the Value
     for item in items:
-        # From the Time get the hour, minute and second
-        time = datetime.datetime.fromtimestamp(int(item['Time'])).strftime('%H:%M:%S')
-        # Get the value
-        value = item['Value']['Value']
+        # From the Time get the day, hour, minute and second
+        time = datetime.datetime.fromtimestamp(int(item['Time'])).strftime('%d-%m-%Y %H:%M:%S')
+        # Get the value and convert it to int
+        value = int(item['Value']['Value'])
         # Append the time and the value to the list
         data_formatted.append([time, value])
 
     return data_formatted
 
+def compute_water_consumed(data, bowl_capacity):
+    # Skip the first item of the list because it is the header
+    water_data_formatted = data[1:]
+    # Compute the total water consumed
+    total_water_consumed = 0
+    for item in water_data_formatted:
+        # Compute the diffeerence between the bowl capacity and the water level
+        total_water_consumed += bowl_capacity - item[1]
+
+    return total_water_consumed
 
 def lambda_handler(event, context):
 
@@ -238,6 +291,12 @@ def lambda_handler(event, context):
             'statusCode': 400,
             'body': json.dumps(params['message'])
         }
+    
+    # Get settings
+    settings = get_settings()
+
+    # Log the settings
+    logger.info("Settings: {}\n".format(settings))
     
     # Get timestamp from params
     start_timestamp = params['params']['start_timestamp']
@@ -259,13 +318,30 @@ def lambda_handler(event, context):
     food_data_formatted = format_data_to_plot(food_data)
     water_data_formatted = format_data_to_plot(water_data)
 
-    return {
-        'statusCode': 200,
-        'headers': {"Content-Type": "text/html"},
-        'body': html_home_page.format(
+    # Log the formatted data
+    logger.info("Food data formatted: {}\n".format(food_data_formatted))
+    logger.info("Water data formatted: {}\n".format(water_data_formatted))
+
+    # Compute the amount of water consumed
+    water_consumed = compute_water_consumed(water_data_formatted, int(settings['Items'][0]['WaterBowlCapacityMilliliters']))
+
+    html_home_page_formatted = html_home_page.format(
             start_date=params['params']['start'], 
             end_date=params['params']['end'],
             food_data=food_data_formatted,
+            water_data=water_data_formatted,
+            food_per_day=settings['Items'][0]['DailyFoodGrams'],
+            number_of_meals=settings['Items'][0]['NumberOfMealsPerDay'],
+            water_bowl_capacity=settings['Items'][0]['WaterBowlCapacityMilliliters'],
+            water_consumed=water_consumed,
             path='{}/{}'.format(stage, resource)
         )
+    
+    # Log the html page
+    logger.info("HTML page: {}\n".format(html_home_page_formatted))
+
+    return {
+        'statusCode': 200,
+        'headers': {"Content-Type": "text/html"},
+        'body': html_home_page_formatted
     }
