@@ -60,8 +60,8 @@ Finally, when the dog ends its meal we can stop the sensing until a new schedule
 - The **load cell** sensor to measure the weight of the water in the bowl has a capacity of 5 Kg since the weight of the bowl can saturate the 1 Kg load cell.
 The chosen unit of measurement is liters (L) and is set using a calibration factor since we can assume 1 Kg = 1 L.
 To choose the periodicity of the sensing we need to consider the fact that we are interested in having water in the bowl at all times and monitoring the dog's water consumption habits, like how much water the dog drinks during the day.
-So, to have water in the bowl at all times, we can consider that the dog drinks continuously for a maximum of 1 minute and after that, the bowl can be empty, so we need to refill it.
-Using the sampling theorem, we need to sample every at least 30 seconds, so we can choose a sampling period of 30 seconds since also the food sensing is triggered every 30 seconds.
+So, to have water in the bowl at all times, we can consider that the dog drinks continuously for a maximum of 30 seconds and after that, the bowl can be empty, so we need to refill it.
+Considering that we don't want that the water bowl refilled while the dog is drinking, we can choose a sampling period of 30 seconds.
   
 ### Collected data velocity, variability and variety
 

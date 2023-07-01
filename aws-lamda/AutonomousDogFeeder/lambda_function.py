@@ -47,20 +47,42 @@ html_home_page = """<!DOCTYPE html>
 
                 function drawChart() {{
 
-                // Set Data
-                const data = google.visualization.arrayToDataTable({food_data});
+                    // Set Data
+                    const data = new google.visualization.DataTable();
+                    
+                    data.addColumn('datetime', 'Time');
+                    data.addColumn('number', 'Food grams');
 
-                // Set Options
-                const options = {{
-                title: 'Food grams vs. Time',
-                vAxis: {{title: 'Food grams'}},
-                hAxis: {{title: 'Time'}},
-                legend: 'none'
-                }};
+                    data.addRows({food_data});
 
-                // Draw
-                const chart = new google.visualization.ScatterChart(document.getElementById('foodChart'));
-                chart.draw(data, options);
+                    // Set Options
+                    const options = {{
+                        title: 'Food grams vs. Time',
+                        vAxis: {{title: 'Food grams'}},
+                        hAxis: {{
+                            title: 'Time',
+                            viewWindow: {{
+                                min: {min_date},
+                                max: {max_date}
+                            }},
+                            gridlines: {{
+                                count: -1,
+                                units: {{
+                                    days: {{format: ['dd MMM']}}
+                                }}
+                            }},
+                            minorGridlines: {{
+                                units: {{
+                                    hours: {{format: ['HH:mm:ss', 'HH']}}
+                                }}
+                            }}    
+                        }},
+                        legend: 'none'
+                    }};
+
+                    // Draw
+                    const chart = new google.visualization.ScatterChart(document.getElementById('foodChart'));
+                    chart.draw(data, options);
 
                 }}
                 </script>
@@ -73,20 +95,42 @@ html_home_page = """<!DOCTYPE html>
 
                 function drawChart() {{
 
-                // Set Data
-                const data = google.visualization.arrayToDataTable({water_data});
+                    // Set Data
+                    const data = new google.visualization.DataTable();
+                    
+                    data.addColumn('datetime', 'Time');
+                    data.addColumn('number', 'Water milliliters');
 
-                // Set Options
-                const options = {{
-                title: 'Water milliliters vs. Time',
-                vAxis: {{title: 'Water milliliters'}},
-                hAxis: {{title: 'Time'}},
-                legend: 'none'
-                }};
+                    data.addRows({water_data});
 
-                // Draw
-                const chart = new google.visualization.ScatterChart(document.getElementById('waterChart'));
-                chart.draw(data, options);
+                    // Set Options
+                    const options = {{
+                        title: 'Water milliliters vs. Time',
+                        vAxis: {{title: 'Water milliliters'}},
+                        hAxis: {{
+                            title: 'Time',
+                            viewWindow: {{
+                                min: {min_date},
+                                max: {max_date}
+                            }},
+                            gridlines: {{
+                                count: -1,
+                                units: {{
+                                    days: {{format: ['dd MMM']}}
+                                }}
+                            }},
+                            minorGridlines: {{
+                                units: {{
+                                    hours: {{format: ['HH:mm:ss', 'HH']}}
+                                }}
+                            }}
+                        }},
+                        legend: 'none'
+                    }};
+
+                    // Draw
+                    const chart = new google.visualization.ScatterChart(document.getElementById('waterChart'));
+                    chart.draw(data, options);
 
                 }}
                 </script>
@@ -258,29 +302,37 @@ def sanity_check(event):
 
 def format_data_to_plot(data):
     # Build a list of lists containing the time and the value
-    data_formatted = [["Time", "Food"]]
+    data_formatted = "["
 
     items = data['Items']
     # For each item, get the Time and the Value
     for item in items:
-        # From the Time get the day, hour, minute and second
-        time = datetime.datetime.fromtimestamp(int(item['Time'])).strftime('%d-%m-%Y %H:%M:%S')
-        # Get the value and convert it to int
-        value = int(item['Value']['Value'])
-        # Append the time and the value to the list
-        data_formatted.append([time, value])
+        # From the timestamp, get the datetime object
+        datetime_obj = datetime.datetime.fromtimestamp(int(item['Time']))
+        # Get the year, month, day, hour, minute and second
+        year = datetime_obj.year
+        month = datetime_obj.month
+        day = datetime_obj.day
+        hour = datetime_obj.hour
+        minute = datetime_obj.minute
+        second = datetime_obj.second
+        # Append the time and the value to the list string
+        data_formatted += "[new Date({},{},{},{},{},{}), {}],".format(year, month, day, hour, minute, second, item['Value']['Value'])
+
+    # Remove the last comma
+    data_formatted = data_formatted[:-1]
+    # Close the list
+    data_formatted += "]"
 
     return data_formatted
 
 def compute_consumption(data):
-    # Skip the first item of the list because it is the header
-    data_formatted = data[1:]
+    items = data['Items']
     # Compute the total water consumed
     total_consumption = 0
-    for item in data_formatted:
-        # Compute the diffeerence between the bowl capacity and the water level
-        total_consumption += item[1]
-
+    # For each item, sum the Value
+    for item in items:
+        total_consumption += int(item['Value']['Value'])
     return total_consumption
 
 def lambda_handler(event, context):
@@ -323,6 +375,11 @@ def lambda_handler(event, context):
     logger.info("Water data: {}\n".format(water_data))
 
 
+    # Compute the amount of water consumed
+    food_consumed = compute_consumption(food_data)
+    water_consumed = compute_consumption(water_data)
+
+
     # Create the data to be plotted
     food_data_formatted = format_data_to_plot(food_data)
     water_data_formatted = format_data_to_plot(water_data)
@@ -332,9 +389,9 @@ def lambda_handler(event, context):
     logger.info("Water data formatted: {}\n".format(water_data_formatted))
 
 
-    # Compute the amount of water consumed
-    water_consumed = compute_consumption(water_data_formatted)
-    food_consumed = compute_consumption(food_data_formatted)
+    # Get the year, month, day, hour, minute and second from the start timestamp and the end timestamp
+    start_datetime = datetime.datetime.fromtimestamp(start_timestamp)
+    end_datetime = datetime.datetime.fromtimestamp(end_timestamp)
 
     html_home_page_formatted = html_home_page.format(
             start_date =            params['params']['start'], 
@@ -342,6 +399,8 @@ def lambda_handler(event, context):
             number_of_days =        days,
             food_data =             food_data_formatted,
             water_data =            water_data_formatted,
+            min_date =              'new Date({},{},{},{},{},{})'.format(start_datetime.year, start_datetime.month, start_datetime.day, start_datetime.hour, start_datetime.minute, start_datetime.second),
+            max_date =              'new Date({},{},{},{},{},{})'.format(end_datetime.year, end_datetime.month, end_datetime.day, end_datetime.hour, end_datetime.minute, end_datetime.second),
             food_per_day =          settings['Items'][0]['DailyFoodGrams'],
             number_of_meals =       settings['Items'][0]['NumberOfMealsPerDay'],
             water_bowl_capacity =   settings['Items'][0]['WaterBowlCapacityMilliliters'],
