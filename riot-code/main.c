@@ -30,7 +30,6 @@ const hx711_params_t hx711_params = {
 static hx711_t dev;
 
 static void _sample (void) {
-    return;
 
     puts("HX711 test application\n");
     puts("+------------Initializing------------+");
@@ -48,19 +47,20 @@ static void _sample (void) {
         value_after = hx711_get_units(&dev);
         printf("value after taring: %"PRIu32"\n", value_after);
 
+        return;
         xtimer_sleep(1);
     }
 }
 
 int main(void)
 {
-
+    char* MQTT_TOPIC_WATER = malloc(sizeof(char)*(14+strlen(board_id)+1));
+    char* MQTT_TOPIC_FOOD = malloc(sizeof(char)*(13+strlen(board_id)+1));
     // Topics
-    char* MQTT_TOPIC_WATER = sprintf("iot/ADF/%s/water", board_id);
-    char* MQTT_TOPIC_FOOD = sprintf("iot/ADF/%s/food", board_id);
+    sprintf(MQTT_TOPIC_WATER, "iot/ADF/%s/water", board_id);
+    sprintf(MQTT_TOPIC_FOOD, "iot/ADF/%s/food", board_id);
 
     init_paho_mqtt();
-    _sample();
 
     char* con_list[2] = {"cmd_con", MQTT_BRIDGE_IP};
     char** con_argv = (char**)&con_list;
@@ -69,7 +69,9 @@ int main(void)
         xtimer_sleep(1);
     }
 
+    uint32_t start_time = xtimer_now_usec();
     /* Sample */
+    _sample();
     float value = 0.5;
     while (1) {
         /* Convert the value to string */
@@ -86,8 +88,12 @@ int main(void)
         /* Free space */
         free(str_value);
         free(message);
-        
-        xtimer_sleep(10);
+
+        uint32_t end_time = xtimer_now_usec();
+        printf("Microseconds difference: %d\n", end_time-start_time); 
+        start_time = end_time;
+
+        xtimer_sleep(5);
         value += 1;
     }
 
