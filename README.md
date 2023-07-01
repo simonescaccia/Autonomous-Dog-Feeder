@@ -117,6 +117,44 @@ Data are collected from the load cell sensors via the HX711 amplifier, which is 
 
 ![software_architecture](./images/software_architecture.drawio.png)
 
+## How do you measure the performance of the system?
+
+We can measure the performance of the system by comparing the data collected from the system with testing samples. These testing samples can be collected to test both the dispensed food and water but also the amount of food and water eaten and drunk by the dog.
+Another metric to measure the performance of the system is the energy consumption of the device, that should satisfy the requirement.
+
+### Aggregation on cloud
+
+Time:
+
+- about x milliseconds to sample the weight on the load cell
+- about y milliseconds to check if the weight is changed and compute the difference
+- about z milliseconds to send the data an MQTT message to the MQTT bridge
+- about w milliseconds to propagate the message to the MQTT bridge
+- about t milliseconds to store the data in the DynamoDB table
+- about u milliseconds to compute the lambda function to query the DynamoDB table and return the web page, in which s milliseconds to aggregate the data
+- total time: v milliseconds
+
+Volume:
+
+- One message contains the deviceId and the value of the sample, so the message size is the size of two integers, which is 8 bytes. Considering that we send two messages every 30 seconds, the volume of data sent to the cloud is 16 bytes every 30 seconds, which is 32 bytes every minute, which is 1920 bytes every hour, which is 46080 bytes every day, which is 1.4 MB every month.
+
+### Aggregation on the device
+
+Time:
+
+- about x milliseconds to sample the weight on the load cell
+- about y milliseconds to check if the weight is changed and compute the difference
+- about z milliseconds to compute the updating of the aggregated data
+- about w milliseconds to send the data an MQTT message to the MQTT bridge
+- about t milliseconds to propagate the message to the MQTT bridge
+- about u milliseconds to store the data in the DynamoDB table
+- about v milliseconds to compute the lambda function to query the DynamoDB table and return the web page, without the aggregation of the data
+- total time: s milliseconds
+
+Volume:
+
+- One message contains the deviceId, the value of the sample, and the aggregated data, so the message size is the size of three integers, which is 12 bytes. Considering that we send two messages every 30 seconds, the volume of data sent to the cloud is 24 bytes every 30 seconds, which is 48 bytes every minute, which is 2880 bytes every hour, which is 69120 bytes every day, which is 2.1 MB every month.
+
 ## Other resources
 
 - [hackster.io]()
