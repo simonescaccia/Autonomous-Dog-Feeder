@@ -6,15 +6,14 @@
 
 #### Main problem
 
-- During the summer, some families leave their dogs because they do not have the opportunity or the desire to move with them. (formal data not found but a lot of news reports every year in the summer are released, in particular they talk about 500 pets abandoned every day in Italy).
+- During the summer, some families leave their dogs because they do not have the opportunity or the desire to move with them. (formal data not found but a lot of news reports every year in the summer are released, in particular, they talk about 500 pets abandoned every day in Italy).
 Duration of the holidays:  
-La maggior parte sceglie di andare via tra giugno, luglio e agosto per periodi anche abbastanza lunghi: il 59% ha infatti indicato dalle 4 alle 7 notti via. Da considerare che la media 2021-2022 delle vacanze degli italiani nel periodo estivo è stata di 4 notti ([source](https://www.nostrofiglio.it/bimbi-in-viaggio/turismo-family-in-italia#:~:text=La%20maggior%20parte%20sceglie%20di,%C3%A8%20stata%20di%204%20notti.)). Then, to help dogs and families in this problem, we want to provide an autonomous dog feeder able to feed the pet for at least 7 days. The goal of this project is to build a reliable alternative to the neglect of dogs during the summer.
+La maggior parte sceglie di andare via tra giugno, luglio e agosto per periodi anche abbastanza lunghi: il 59% ha infatti indicato dalle 4 alle 7 notti via. Da considerare che la media 2021-2022 delle vacanze degli italiani nel periodo estivo è stata di 4 notti ([source](https://www.nostrofiglio.it/bimbi-in-viaggio/turismo-family-in-italia#:~:text=La%20maggior%20parte%20sceglie%20di,%C3%A8%20stata%20di%204%20notti.)). Then, to help dogs and families with this problem, we want to provide an autonomous dog feeder to feed the pet for at least 7 days. This project aims to build a reliable alternative to the neglect of dogs during the summer.
 
 #### Related problems
 
 - Dogs have a daily amount of food they need to eat, according to their age, activity level, and health condition. This amount of food is suggested by the vet or written on the dog food package. We want to make sure that the dog gets the right amount of food every day.
 - Dogs need to eat their food several meals throughout the day. Each meal should be served at a specific time, according to the dog's age and activity level or preference. We want to make sure that the dog gets the right amount of food at the right time.
-- Dog owners may not be able to feed their dogs on time due to work or other commitments.
 - Water is essential for dogs. We want to make sure that the dog has access to water at all times.
 - We want to monitor the trends of the dog's eating habits and water consumption, to support the medical diagnosis.
 
@@ -29,10 +28,10 @@ La maggior parte sceglie di andare via tra giugno, luglio e agosto per periodi a
 
 - **Load cell** sensor to measure the weight of the food in the bowl.
 Periodic sensing is required to measure over time the quantity of food in the bowl.
-(**Identify a suitable sensor data prediction model.**)
+By doing this, we can learn the dog's eating habits, like building a confidence percentage of the amount of food the dog eats at each time, to increase the power efficiency of the system.
 - **Load cell** sensor to measure the weight of the water in the bowl to quantify the liters of water in the bowl (the density of the water is about 1 Kg/L, considering the temperature of the water at room temperature and the pressure at sea level).
 Periodic sensing is required to measure over time the quantity of water in the bowl.
-(**Identify a suitable sensor data prediction model.**)
+By doing this, we can learn the dog's drinking habits, like building a confidence percentage of the amount of water the dog drinks at each time, to increase the power efficiency of the system.
 - **Button** to start or stop the autonomous dog feeder.
 
 ### Actuators
