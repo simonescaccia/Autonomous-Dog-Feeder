@@ -156,5 +156,5 @@ Volume:
 
 ## Other resources
 
-- [hackster.io]()
+- [hackster.io](https://www.hackster.io/simonescaccia99/autonomous-dog-feeder-8ce118)
 - [YouTube]()
