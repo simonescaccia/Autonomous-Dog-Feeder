@@ -1,13 +1,13 @@
 # Autonomous-Dog-Feeder
 
-## What is the problem and why do you need IoT?
+## 1. What is the problem and why do you need IoT?
 
 ### Problems we want to solve
 
 #### Main problem
 
-- During the summer, some families leave their dogs because they do not have the opportunity or the desire to move with them. (data not found but a lot of news reports every year in the summer are released).
-Duration:  
+- During the summer, some families leave their dogs because they do not have the opportunity or the desire to move with them. (formal data not found but a lot of news reports every year in the summer are released, in particular they talk about 500 pets abandoned every day in Italy).
+Duration of the holidays:  
 La maggior parte sceglie di andare via tra giugno, luglio e agosto per periodi anche abbastanza lunghi: il 59% ha infatti indicato dalle 4 alle 7 notti via. Da considerare che la media 2021-2022 delle vacanze degli italiani nel periodo estivo è stata di 4 notti ([source](https://www.nostrofiglio.it/bimbi-in-viaggio/turismo-family-in-italia#:~:text=La%20maggior%20parte%20sceglie%20di,%C3%A8%20stata%20di%204%20notti.)). Then, to help dogs and families in this problem, we want to provide an autonomous dog feeder able to feed the pet for at least 7 days. The goal of this project is to build a reliable alternative to the neglect of dogs during the summer.
 
 #### Related problems
@@ -43,7 +43,7 @@ The activation of the servo motor will be triggered by the cloud-based service o
 - A **water pump** fills the bowl with the water.
 The activation of the water pump will be triggered by the load cell sensor only when the bowl doesn't contain the required amount of water.
 
-## What data are collected and by which sensors?
+## 2. What data are collected and by which sensors?
 
 We want to collect the food and water consumption of the dog, during the day. By observing the sample data on load cells, we want to compute locally the amount of food and water consumed by the dog. Then, we want to send the computed data to the cloud-based service to store them and make them available to the dog owner.
 
@@ -93,7 +93,7 @@ With this approach, we can avoid sending the data to the cloud-based service, bu
 
 Another approach is to send the data to the cloud-based service and build the global model there. In this case, we need to consider the privacy of the dog and the greater energy consumption of the device.
 
-## What are the connected components, the protocols to connect them and the overall IoT architecture?
+## 3. What are the connected components, the protocols to connect them and the overall IoT architecture?
 
 ### Network diagram
 
@@ -117,7 +117,7 @@ Data are collected from the load cell sensors via the HX711 amplifier, which is 
 
 ![software_architecture](./images/software_architecture.drawio.png)
 
-## How do you measure the performance of the system?
+## 4. How do you measure the performance of the system?
 
 We can measure the performance of the system by comparing the data collected from the system with testing samples. These testing samples can be collected to test both the dispensed food and water but also the amount of food and water eaten and drunk by the dog.
 Another metric to measure the performance of the system is the energy consumption of the device, that should satisfy the requirement.
