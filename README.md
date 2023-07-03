@@ -100,6 +100,8 @@ Data are collected from the load cell sensors via the HX711 amplifier, which is 
 
 ![aws_architecture](./images/aws-architecture.drawio.png)
 
+![web_site](./images/web_site.jpg)
+
 ### Software components
 
 - Device level:
