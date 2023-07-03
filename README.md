@@ -1,5 +1,7 @@
 # Autonomous-Dog-Feeder
 
+![phisical_circuit](./images/phisical_circuit.jpg)
+
 ## 1. What is the problem and why do you need IoT?
 
 ### Problems we want to solve
@@ -32,7 +34,7 @@ By doing this, we can learn the dog's eating habits, like building a confidence 
 - **Load cell** sensor to measure the weight of the water in the bowl to quantify the liters of water in the bowl (the density of the water is about 1 Kg/L, considering the temperature of the water at room temperature and the pressure at sea level).
 Periodic sensing is required to measure over time the quantity of water in the bowl.
 By doing this, we can learn the dog's drinking habits, like building a confidence percentage of the amount of water the dog drinks at each time, to increase the power efficiency of the system.
-- **Slide switch** to start or stop the autonomous dog feeder.
+- **Slide Switch** to start or stop the autonomous dog feeder.
 
 ### Actuators
 
