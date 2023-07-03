@@ -32,7 +32,7 @@ By doing this, we can learn the dog's eating habits, like building a confidence 
 - **Load cell** sensor to measure the weight of the water in the bowl to quantify the liters of water in the bowl (the density of the water is about 1 Kg/L, considering the temperature of the water at room temperature and the pressure at sea level).
 Periodic sensing is required to measure over time the quantity of water in the bowl.
 By doing this, we can learn the dog's drinking habits, like building a confidence percentage of the amount of water the dog drinks at each time, to increase the power efficiency of the system.
-- **Button** to start or stop the autonomous dog feeder.
+- **Slide switch** to start or stop the autonomous dog feeder.
 
 ### Actuators
 
@@ -110,7 +110,7 @@ Data are collected from the load cell sensors via the HX711 amplifier, which is 
 - Cloud level:
   - Lambda data query: the Lambda function will query the DynamoDB table selecting the samples in a given interval of time.
   - Lambda data computation: the Lambda function will compute the sum of the food eaten and the sum of the water drunk in a given interval of time.
-  - Lambda data visualization: since we send only the samples with a value greater than 0, we need to add to these samples the samples with a value equal to 0, to have a complete visualization of the data. Then the Lambda function will return a web page with the data computed.
+  - Lambda data visualization: formatting data to be visualized on a web page. Then the Lambda function will return a web page with the data computed.
 
 ### Software architecture
 
