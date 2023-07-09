@@ -1,29 +1,7 @@
-/*
- * Copyright (C) 2018 - 2020 Philipp-Alexander Blum <philipp-blum@jakiku.de>
- *               2019 Kaspar Schleiser <kaspar@schleiser.de>
- *
- * This file is subject to the terms and conditions of the GNU Lesser
- * General Public License v2.1. See the file LICENSE in the top level
- * directory for more details.
- */
-
-/**
- * @ingroup     drivers_sensors
- * @brief       Driver for the HX711 weigh scale ADC
- *
- * @{
- * @file
- * @brief       HX711 driver
- *
- * @author      Philipp-Alexander Blum <philipp-blum@jakiku.de>
- * @author      Kaspar Schleiser <kaspar@schleiser.de>
- *
- * @}
- */
+#include <stdio.h>
 
 #include "driver_hx711.h"
 #include "periph/gpio_util.h"
-#include <stdio.h>
 
 /**
  * @brief Needs to wait for device to be ready while initialization
@@ -89,6 +67,15 @@ void hx711_init(hx711_t *dev, const hx711_params_t *params)
     gpio_init(params->dout, GPIO_IN);
 
     _hx711_set_gain(dev, params->gain);
+}
+
+void hx711_setup(hx711_t *dev, const hx711_params_t *params) {
+    puts("Initializing hx711");
+    hx711_init(dev, params);
+    hx711_power_up(dev);
+    puts("Initialization successful\n\n");
+
+    hx711_tare(dev);
 }
 
 int32_t hx711_read_average(hx711_t *dev)

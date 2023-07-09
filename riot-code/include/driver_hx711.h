@@ -1,3 +1,6 @@
+#ifndef DRIVER_HX711_H
+#define DRIVER_HX711_H
+
 #include "periph/gpio.h"
 #include <inttypes.h>
 
@@ -66,3 +69,12 @@ void hx711_power_down(hx711_t *dev);
  * @param dev The hx711 device
  */
 void hx711_power_up(hx711_t *dev);
+
+/**
+ * @brief Init and tare hx711
+ * @param dev The device to initialize
+ * @param params The parameters for the hx711 device
+*/
+void hx711_setup(hx711_t *dev, const hx711_params_t *params);
+
+#endif

@@ -30,6 +30,8 @@
 #include "MQTTClient.h"
 
 #include "paho_mqtt_methods.h"
+#include "app_params.h"
+#include "xtimer.h"
 
 #define BUF_SIZE                        1024
 #define MQTT_VERSION_v311               4       /* MQTT v3.1.1 version is 4 */
@@ -293,5 +295,12 @@ int init_paho_mqtt (void) {
 
     MQTTStartTask(&client);
     
+    char* con_list[2] = {"cmd_con", MQTT_BRIDGE_IP};
+    char** con_argv = (char**)&con_list;
+    while (cmd_con(2, con_argv) < 0) {
+        /* Wait for the WiFi connection */
+        xtimer_sleep(1);
+    }
+
     return 0;
 }
