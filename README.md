@@ -129,11 +129,9 @@ Another metric to measure the performance of the system is the energy consumptio
 
 Time:
 
-- about x milliseconds to sample the weight on the load cell
-- about y milliseconds to check if the weight is changed and compute the difference
-- about z milliseconds to send the data an MQTT message to the MQTT bridge
-- about w milliseconds to propagate the message to the MQTT bridge
-- about t milliseconds to store the data in the DynamoDB table
+- about 400 milliseconds to sample the weight on the load cell, compute the consumption and send an MQTT message to the MQTT bridge.
+- about y milliseconds to propagate an MQTT message to the MQTT bridge.
+- about z milliseconds to store the data in the DynamoDB table
 - about u milliseconds to compute the lambda function to query the DynamoDB table and return the web page, in which s milliseconds to aggregate the data
 - total time: v milliseconds
 
