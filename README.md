@@ -105,38 +105,38 @@ $$E_{SleepDay} = 0.004 W * 0.99 * 24 h = 0.094 Wh$$
 
 Also, we can assume that in a day we will serve the dog 2 meals and 10 water refills, in which the single refill will require 5 seconds to complete,
 so we can compute the energy consumption for the serving part in a day:
-$$ E_{ServingServoDay} = 2 * 0.95 W * 2 * 0.000057 h = 0.0022 Wh $$
-$$ E_{ServingPumpDay} = 0.25 W * 10 * 0.000057 h = 0.00014 Wh $$
+$$E_{ServingServoDay} = 2 * 0.95 W * 2 * 0.000057 h = 0.0022 Wh$$
+$$E_{ServingPumpDay} = 0.25 W * 10 * 0.000057 h = 0.00014 Wh$$
 
 Also, we need to consider the energy consumption of the ESP32 while sending data through the WiFi connection in a day. We can assume about 20 sendings in a day, 10 for the water refill and 10 for the food monitoring, 5 per meal. So, we can compute the energy consumption for the WiFi connection in a day, considering 1 second for each sending:
-$$ E_{WiFiDay} = 0.2 W * 20 * 0.000016 h = 0.000064 Wh $$
+$$E_{WiFiDay} = 0.2 W * 20 * 0.000016 h = 0.000064 Wh$$
 
 Finally, we can compute the total energy consumption in a day:
-$$ E_{TotalDay} = E_{SamplingDay} + E_{SleepDay} + E_{ServingServoDay} + E_{ServingPumpDay} + E_{WiFiDay} = 0.100004 Wh $$
+$$E_{TotalDay} = E_{SamplingDay} + E_{SleepDay} + E_{ServingServoDay} + E_{ServingPumpDay} + E_{WiFiDay} = 0.100004 Wh$$
 
 Then in a week:
-$$ E_{TotalWeek} = 7 * E_{TotalDay} = 0.700028 Wh $$
+$$E_{TotalWeek} = 7 * E_{TotalDay} = 0.700028 Wh$$
 
 Then in a month:
-$$ E_{TotalMonth} = 30 * E_{TotalDay} = 3.00012 Wh $$
+$$E_{TotalMonth} = 30 * E_{TotalDay} = 3.00012 Wh$$
 
 Then in a year:
-$$ E_{TotalYear} = 365 * E_{TotalDay} = 36.50014 Wh $$
+$$E_{TotalYear} = 365 * E_{TotalDay} = 36.50014 Wh$$
 
 So, to choose the battery, we need 5V and then:
-$$ mAh = \frac{Wh}{V} = \frac{36.50014 Wh}{5 V} = 7.300028 Ah $$
+$$mAh = \frac{Wh}{V} = \frac{36.50014 Wh}{5 V} = 7.300028 Ah$$
 Which is a reasonable battery capacity for a device like the ESP32, then we meet the requirements of at least 1 week.
 
 With the data prediction model, we can avoid the sampling part in time in which we can predict that the dog will not eat or drink, like during the night. So, a reasonable assumption is that we avoid sampling in the 33% of the day (8 hours of sleep), and we can compute the energy consumption for the sampling part in a day:
-$$ E_{SamplingDayPrediction} = 2 * 0.0075 W * 0.01 * 16 h = 0.0024 Wh $$
-$$ E_{SleepDayDutyPrediction} = 0.004 W * 0.99 * 16 h = 0.06336 Wh $$
-$$ E_{SleepDayFullPrediction} = 0.004 W * 8 h = 0.032 Wh $$
+$$E_{SamplingDayPrediction} = 2 * 0.0075 W * 0.01 * 16 h = 0.0024 Wh$$
+$$E_{SleepDayDutyPrediction} = 0.004 W * 0.99 * 16 h = 0.06336 Wh$$
+$$E_{SleepDayFullPrediction} = 0.004 W * 8 h = 0.032 Wh$$
 
 Then, we can compute the energy consumption in a day:
-$$ E_{TotalDayPrediction} = E_{SamplingDayPrediction} + E_{SleepDayDutyPrediction} + E_{SleepDayFullPrediction} + E_{ServingServoDay} + E_{ServingPumpDay} + E_{WiFiDay} = 0.09776 Wh $$
+$$E_{TotalDayPrediction} = E_{SamplingDayPrediction} + E_{SleepDayDutyPrediction} + E_{SleepDayFullPrediction} + E_{ServingServoDay} + E_{ServingPumpDay} + E_{WiFiDay} = 0.09776 Wh$$
 
 Then i a year:
-$$ E_{TotalYearPrediction} = 365 * E_{TotalDayPrediction} = 35.7004 Wh $$
+$$E_{TotalYearPrediction} = 365 * E_{TotalDayPrediction} = 35.7004 Wh$$
 
 So, using a data prediction model, theoretically, we can reduce the energy consumption of the device by 0.8 Wh in a year, which is a percentage of 2.2%.
 
