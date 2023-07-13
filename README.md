@@ -130,10 +130,10 @@ Another metric to measure the performance of the system is the energy consumptio
 Time:
 
 - about 400 milliseconds to sample the weight on the load cell, compute the consumption and send an MQTT message to the MQTT bridge.
-- about y milliseconds to propagate an MQTT message to the MQTT bridge.
-- about z milliseconds to store the data in the DynamoDB table
-- about u milliseconds to compute the lambda function to query the DynamoDB table and return the web page, in which s milliseconds to aggregate the data
-- total time: v milliseconds
+- about 300 milliseconds to propagate an MQTT message to the MQTT bridge through WiFi. It depends on the WiFi protocol and on the distance between the board and the MQTT bridge. In the prototype is used an Heltec wifi-lora-32-v3, which has as WiFi protocols 802.11 b/g/n, up to 150Mbps.
+- about 100 milliseconds to store the data in the DynamoDB table.
+- about 400 milliseconds to compute the lambda function, to query the DynamoDB table and return the web page, in which 100 milliseconds to aggregate the data.
+- total time: 1.2 seconds.
 
 Volume:
 
@@ -143,14 +143,11 @@ Volume:
 
 Time:
 
-- about x milliseconds to sample the weight on the load cell
-- about y milliseconds to check if the weight is changed and compute the difference
-- about z milliseconds to compute the updating of the aggregated data
-- about w milliseconds to send the data an MQTT message to the MQTT bridge
-- about t milliseconds to propagate the message to the MQTT bridge
-- about u milliseconds to store the data in the DynamoDB table
-- about v milliseconds to compute the lambda function to query the DynamoDB table and return the web page, without the aggregation of the data
-- total time: s milliseconds
+- about 400 milliseconds to sample the weight on the load cell, compute the consumption, compute the new aggrgation data (which is about 0 milliseconds since it's required only a sum) and send an MQTT message to the MQTT bridge.
+- about 300 milliseconds to propagate the message to the MQTT bridge.
+- about 100 milliseconds to store the data in the DynamoDB table.
+- about 300 milliseconds to compute the lambda function to query the DynamoDB table and return the web page, without the aggregation of the data.
+- total time: 1.1 seconds.
 
 Volume:
 
