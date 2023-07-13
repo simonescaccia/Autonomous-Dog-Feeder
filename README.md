@@ -100,8 +100,8 @@ Without the data prediction model, as described above, we will monitor the water
 
 Considering that sampling using the load cell require 300 milliseconds, and the rest of the 30 seconds the ESP32 is in deep sleep, we can compute the percentage of the duty cycle for the sampling. So, using the proportion 30000:100=300:x, we can compute the duty cycle x=1%.
 Finally, we can compute the energy consumption for the sampling part in a day: 
-$$ E_{SamplingDay} = 2 * 0.0075 W * 0.01 * 24 h = 0.0036 Wh $$
-$$ E_{SleepDay} = 0.004 W * 0.99 * 24 h = 0.094 Wh $$
+$$E_{SamplingDay} = 2 * 0.0075 W * 0.01 * 24 h = 0.0036 Wh$$
+$$E_{SleepDay} = 0.004 W * 0.99 * 24 h = 0.094 Wh$$
 
 Also, we can assume that in a day we will serve the dog 2 meals and 10 water refills, in which the single refill will require 5 seconds to complete,
 so we can compute the energy consumption for the serving part in a day:
