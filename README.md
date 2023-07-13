@@ -31,27 +31,23 @@ La maggior parte sceglie di andare via tra giugno, luglio e agosto per periodi a
 - **Load cell** sensor to measure the weight of the food in the bowl.
 Periodic sensing is required to measure over time the quantity of food in the bowl.
 By doing this, we can learn the dog's eating habits, like building a confidence percentage of the amount of food the dog eats at each time, to increase the power efficiency of the system.
-<br>
 ![load_cell](./images/load_cell.png)
 - **Load cell** sensor to measure the weight of the water in the bowl to quantify the liters of water in the bowl (the density of the water is about 1 Kg/L, considering the temperature of the water at room temperature and the pressure at sea level).
 Periodic sensing is required to measure over time the quantity of water in the bowl.
 By doing this, we can learn the dog's drinking habits, like building a confidence percentage of the amount of water the dog drinks at each time, to increase the power efficiency of the system.
-<br>
 ![load_cell](./images/load_cell.png)
 - **Slide Switch** to start or stop the autonomous dog feeder.
-<br>
 ![slide_switch](./images/slide_switch.png)
 
 ### Actuators
 
 - A **servo motor** to open and close the recipient of the food.
 The activation of the servo motor will be triggered by the cloud-based service only the bowl can contain the required amount of food.
-<br>
 ![servo_motor](./images/servo.png)
-- A **servo motor** to shake the recipient of the food. The activation of the servo motor will be triggered by the cloud-based service only the bowl can contain the required amount of food. <br>
+- A **servo motor** to shake the recipient of the food. The activation of the servo motor will be triggered by the cloud-based service only the bowl can contain the required amount of food.
 ![servo_motor](./images/servo.png)
 - A **water pump** fills the bowl with the water.
-The activation of the water pump will be triggered by the load cell sensor only when the bowl doesn't contain the required amount of water. <br>
+The activation of the water pump will be triggered by the load cell sensor only when the bowl doesn't contain the required amount of water.
 ![water_pump](./images/water_pump.png)
 
 ## 2. What data are collected and by which sensors?
