@@ -88,7 +88,7 @@ Considering that we don't want that the water bowl refilled while the dog is dri
 
 - Collective data analysis: we expect to obtain similar habits for dogs with the same characteristics, like breed, age, weight, etc. So, we can use the data collected from all the dogs to predict the eating habits of a new dog with similar characteristics.
 
-### Data predicion model and energy consumption
+### Data prediction model and energy consumption
 
 Without the data prediction model, as described above, we will monitor the water and food bowl every 30 seconds, and the energy consumption can be approximated to the following (considering that the servos and the water pump are activated only when needed, generally less than 10 times a day):
 
