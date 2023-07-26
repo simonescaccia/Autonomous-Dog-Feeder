@@ -17,6 +17,7 @@ QUIET ?= 1
 
 USEMODULE += xtimer
 USEMODULE += fmt
+USEMODULE += servo
 
 # modules directory --------------------
 USEMODULE += modules

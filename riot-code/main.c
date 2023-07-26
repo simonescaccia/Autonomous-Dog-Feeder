@@ -6,6 +6,7 @@
 #include "fmt.h"
 #include "xtimer.h"
 #include "driver_hx711.h"
+#include "driver_servo.h"
 #include "paho_mqtt_methods.h"
 #include "app_params.h"
 
@@ -16,6 +17,10 @@ char* mqtt_topic_food;
 // hx711
 hx711_t water_hx_dev;
 hx711_t food_hx_dev;
+
+// servo
+servo_t switch_servo;
+servo_t shake_servo;
 
 void init_drivers(void)
 {
@@ -29,6 +34,12 @@ void init_drivers(void)
     // hx711
     hx711_setup(&water_hx_dev, &water_hx711_params);
     hx711_setup(&food_hx_dev, &food_hx711_params);
+
+    //servo
+    servo_setup(&shake_servo, &shake_servo_params);
+    servo_setup(&switch_servo, &switch_servo_params);
+
+
 }
 
 int main(void)
@@ -44,6 +55,13 @@ int main(void)
         int32_t food_value = hx711_get_units(&food_hx_dev);
         printf("food value %"PRIu32"\n", food_value);
 
+        //servo_on(&switch_servo);
+        //servo_on(&shake_servo);
+
+        xtimer_sleep(1);
+
+        //servo_off(&switch_servo);
+        //servo_off(&shake_servo);
         //publish_message(water_value, mqtt_topic_water);
         //publish_message(food_value, mqtt_topic_food);
 
