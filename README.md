@@ -50,6 +50,8 @@ The activation of the servo motor will be triggered by the cloud-based service o
 The activation of the water pump will be triggered by the load cell sensor only when the bowl doesn't contain the required amount of water.\
 ![water_pump](./images/water_pump.png)
 
+![circuit](./images/Circuit_bb.png)
+
 ## 2. What data are collected and by which sensors?
 
 We want to collect the food and water consumption of the dog, during the day. By observing the sample data on load cells, we want to compute locally the amount of food and water consumed by the dog. Then, we want to send the computed data to the cloud-based service to store them and make them available to the dog owner.
@@ -135,7 +137,7 @@ $$E_{SleepDayFullPrediction} = 0.004 W * 8 h = 0.032 Wh$$
 Then, we can compute the energy consumption in a day:
 $$E_{TotalDayPrediction} = E_{SamplingDayPrediction} + E_{SleepDayDutyPrediction} + E_{SleepDayFullPrediction} + E_{ServingServoDay} + E_{ServingPumpDay} + E_{WiFiDay} = 0.09776 Wh$$
 
-Then i a year:
+Then in a year:
 $$E_{TotalYearPrediction} = 365 * E_{TotalDayPrediction} = 35.7004 Wh$$
 
 So, using a data prediction model, theoretically, we can reduce the energy consumption of the device by 0.8 Wh in a year, which is a percentage of 2.2%.

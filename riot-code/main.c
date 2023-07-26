@@ -23,6 +23,10 @@ hx711_t food_hx_dev;
 servo_t switch_servo;
 servo_t shake_servo;
 
+// generic
+bool alive = false; // switch on/off state
+int32_t water_milliliters_last_observation = 0;
+
 void init_drivers(void)
 {
     // MQTT
@@ -48,11 +52,35 @@ void init_drivers(void)
 
 }
 
+void compute_water_dispenser()
+{
+    int32_t water_value = hx711_get_units(&water_hx_dev); /* Sample */
+    printf("water value %"PRIu32"\n", water_value);
+
+    if(water_value < 5000) {
+        // refill water to the target value 
+    }
+}
+
 int main(void)
 {
     init_drivers();
+    
+    xtimer_ticks32_t last_wakeup;
+    bool is_last_wakeup = false;
 
     while (1) {
+
+        if(slide_switch_read()) {
+            compute_water_dispenser();
+            //compute_food_dispencer();
+            alive = true;
+        } else {
+            alive = false;
+        }
+
+        
+
         //uint32_t start_time = xtimer_now_usec();
 
         /* Sample */
@@ -65,7 +93,7 @@ int main(void)
         //servo_on(&shake_servo);
         //water_pump_on();
         xtimer_sleep(1);
-        printf("slidde switch %d", slide_switch_read());
+        printf("slide switch %d", slide_switch_read());
         //water_pump_off();
         //servo_off(&switch_servo);
         //servo_off(&shake_servo);
@@ -76,7 +104,14 @@ int main(void)
         //printf("Microseconds difference: %d\n", end_time-start_time); 
         //start_time = end_time;
 
-        xtimer_sleep(1);
+
+        /* Duty cycle */
+        if (!is_last_wakeup) {
+            /* set last_wakeup only the first time */
+            is_last_wakeup = true;
+            last_wakeup = xtimer_now();
+        }
+        xtimer_periodic_wakeup(&last_wakeup, US_PER_SEC * 30);
     }
 
     return 0;
