@@ -7,6 +7,7 @@
 #include "xtimer.h"
 #include "driver_hx711.h"
 #include "driver_servo.h"
+#include "water_pump.h"
 #include "paho_mqtt_methods.h"
 #include "app_params.h"
 
@@ -35,10 +36,15 @@ void init_drivers(void)
     hx711_setup(&water_hx_dev, &water_hx711_params);
     hx711_setup(&food_hx_dev, &food_hx711_params);
 
-    //servo
+    // servo
     servo_setup(&shake_servo, &shake_servo_params);
     servo_setup(&switch_servo, &switch_servo_params);
 
+    // water_pump
+    water_pump_setup();
+
+    // slide switch
+    slide_switch_setup();
 
 }
 
@@ -57,9 +63,10 @@ int main(void)
 
         //servo_on(&switch_servo);
         //servo_on(&shake_servo);
-
+        //water_pump_on();
         xtimer_sleep(1);
-
+        printf("slidde switch %d", slide_switch_read());
+        //water_pump_off();
         //servo_off(&switch_servo);
         //servo_off(&shake_servo);
         //publish_message(water_value, mqtt_topic_water);

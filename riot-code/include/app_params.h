@@ -37,6 +37,12 @@ extern const servo_pwm_params_t my_servo_pwm_params;
 extern const servo_params_t switch_servo_params;
 extern const servo_params_t shake_servo_params;
 
+// water_pump
+#define RELAY_PIN GPIO_PIN(0,21)
+
+// slide switch
+#define SLIDE_PIN GPIO_PIN(0,48)
+
 // generic
 extern const uint16_t water_bowl_milliliters;
 extern const uint16_t daily_food_grams;
