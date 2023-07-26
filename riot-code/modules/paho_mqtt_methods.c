@@ -285,7 +285,8 @@ int cmd_unsub(int argc, char **argv)
     return ret;
 }
 
-int init_paho_mqtt (void) {
+int init_paho_mqtt(void) 
+{
     NetworkInit(&network);
 
     MQTTClientInit(&client, &network, COMMAND_TIMEOUT_MS, buf, BUF_SIZE,
@@ -303,4 +304,21 @@ int init_paho_mqtt (void) {
     }
 
     return 0;
+}
+
+void publish_message(int value, char* topic) 
+{
+    /* Convert the value to string */
+    char* str_value = malloc(sizeof(char*)*MAXIMUM_VALUE_LENGHT);
+    sprintf(str_value, "%" PRIu32 "", value);
+    /* Concat the string with the deviceId */
+    char* message = malloc(sizeof(char*)*(strlen(board_id)+strlen(str_value)+2));
+    sprintf(message, "%s,%s", board_id, str_value);
+    /* Publish the value */
+    char* pub_list[3] = {"cmd_pub", topic, message};
+    char** pub_argv = (char**)&pub_list;
+    cmd_pub(3, pub_argv);
+    /* Free space */
+    free(str_value);
+    free(message);
 }
