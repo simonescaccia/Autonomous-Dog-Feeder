@@ -17,7 +17,7 @@ char* mqtt_topic_food;
 hx711_t water_hx_dev;
 hx711_t food_hx_dev;
 
-void init_drivers()
+void init_drivers(void)
 {
     // MQTT
     mqtt_topic_water = malloc(sizeof(char)*(14+strlen(board_id)+1));
@@ -36,20 +36,20 @@ int main(void)
     init_drivers();
 
     while (1) {
-        uint32_t start_time = xtimer_now_usec();
+        //uint32_t start_time = xtimer_now_usec();
 
         /* Sample */
         int32_t water_value = hx711_get_units(&water_hx_dev);
         printf("water value %"PRIu32"\n", water_value);
         int32_t food_value = hx711_get_units(&food_hx_dev);
-        printf("water value %"PRIu32"\n", food_value);
+        printf("food value %"PRIu32"\n", food_value);
 
-        publish_message(water_value, mqtt_topic_water)
-        publish_message(food_value, mqtt_topic_food);
+        //publish_message(water_value, mqtt_topic_water);
+        //publish_message(food_value, mqtt_topic_food);
 
-        uint32_t end_time = xtimer_now_usec();
-        printf("Microseconds difference: %d\n", end_time-start_time); 
-        start_time = end_time;
+        //uint32_t end_time = xtimer_now_usec();
+        //printf("Microseconds difference: %d\n", end_time-start_time); 
+        //start_time = end_time;
 
         xtimer_sleep(1);
     }

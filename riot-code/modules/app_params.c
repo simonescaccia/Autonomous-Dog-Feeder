@@ -4,7 +4,7 @@ const char board_id[] = "1";
 
 const gpio_t water_hx_gpio_dout = GPIO_PIN(0 ,6);
 const gpio_t water_hx_gpio_sck = GPIO_PIN(0, 7);
-const uint16_t water_hx_divider = 479;
+const uint16_t water_hx_divider = 494;
 const uint8_t water_hx_read_times = 1;
 const hx711_gain_t water_hx_gain = CHANNEL_A_128;
 
@@ -16,8 +16,8 @@ const hx711_params_t water_hx711_params = {
     water_hx_divider
 };
 
-const gpio_t food_hx_gpio_dout = GPIO_PIN(0 ,4);
-const gpio_t food_hx_gpio_sck = GPIO_PIN(0, 5);
+const gpio_t food_hx_gpio_dout = GPIO_PIN(0 ,5);
+const gpio_t food_hx_gpio_sck = GPIO_PIN(0, 4);
 const uint16_t food_hx_divider = 479;
 const uint8_t food_hx_read_times = 1;
 const hx711_gain_t food_hx_gain = CHANNEL_A_128;
