@@ -8,6 +8,7 @@
 #include "driver_hx711.h"
 #include "driver_servo.h"
 #include "water_pump.h"
+#include "slide_switch.h"
 #include "paho_mqtt_methods.h"
 #include "app_params.h"
 
@@ -25,7 +26,7 @@ servo_t shake_servo;
 
 // generic
 bool alive = false; // switch on/off state
-int32_t water_milliliters_last_observation = 0;
+int32_t water_milliliters_last_refill = 0;
 
 void init_drivers(void)
 {
@@ -52,13 +53,32 @@ void init_drivers(void)
 
 }
 
-void compute_water_dispenser()
+void refill_water(void)
+{
+    while(hx711_get_units(&water_hx_dev) < water_bowl_milliliters)
+    {
+        water_pump_on();
+    }
+    water_pump_off();
+    water_milliliters_last_refill = hx711_get_units(&water_hx_dev);
+}
+
+void compute_water_dispenser(void)
 {
     int32_t water_value = hx711_get_units(&water_hx_dev); /* Sample */
     printf("water value %"PRIu32"\n", water_value);
 
-    if(water_value < 5000) {
-        // refill water to the target value 
+    if(!alive) {
+        // init the water bowl
+        refill_water();
+        return;
+    }
+
+    if (water_value < water_milliliters_last_refill) {
+        // check water consumption
+        publish_message(water_milliliters_last_refill - water_value, mqtt_topic_water);
+        refill_water();
+        return;
     }
 }
 
@@ -83,22 +103,8 @@ int main(void)
 
         //uint32_t start_time = xtimer_now_usec();
 
-        /* Sample */
-        int32_t water_value = hx711_get_units(&water_hx_dev);
-        printf("water value %"PRIu32"\n", water_value);
-        int32_t food_value = hx711_get_units(&food_hx_dev);
-        printf("food value %"PRIu32"\n", food_value);
-
         //servo_on(&switch_servo);
         //servo_on(&shake_servo);
-        //water_pump_on();
-        xtimer_sleep(1);
-        printf("slide switch %d", slide_switch_read());
-        //water_pump_off();
-        //servo_off(&switch_servo);
-        //servo_off(&shake_servo);
-        //publish_message(water_value, mqtt_topic_water);
-        //publish_message(food_value, mqtt_topic_food);
 
         //uint32_t end_time = xtimer_now_usec();
         //printf("Microseconds difference: %d\n", end_time-start_time); 
